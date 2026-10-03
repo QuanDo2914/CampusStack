@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'tests/browser',fullyParallel:false,workers:1,use:{baseURL:'http://localhost:5173',headless:true},webServer:[{command:'npm run test:server',env:{CAMPUS_TEST_MATCH_SECONDS:'8'},url:'http://localhost:8787/health',reuseExistingServer:true},{command:'npm run dev',url:'http://localhost:5173',env:{VITE_LOCAL_SERVER_URL:'http://localhost:8787'},reuseExistingServer:true}]});

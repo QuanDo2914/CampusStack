@@ -1,0 +1,2 @@
+import type {GameEvent} from '../types/game';
+export function EventFeed({events}:{events:GameEvent[]}){return <section className="event-feed"><div className="panel-heading"><h2>Campus happenings</h2><span>Latest moves</span></div><ol>{[...events].reverse().slice(0,8).map((e,i)=><li key={e.sequence}><span className="event-number">{String(e.sequence).padStart(2,'0')}</span><span className={i===0 ? 'latest-event' : ''}>{e.message}</span></li>)}</ol></section>;}
