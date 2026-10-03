@@ -59,6 +59,26 @@ export function makeHandler({rpc, env}) {
    data.access_token=await sign(data);
    return reply(data);
   } catch(e) {
+   // Temporary diagnostics: allowlisted fields only; never log the error object or request.
+   const redactions=['CAMPUS_JWT_SECRET','CAMPUS_JWT_JWK','CAMPUS_SERVER_KEY','SUPABASE_SERVICE_ROLE_KEY']
+    .map(name=>env(name)).filter(value=>typeof value==='string' && value.length>0);
+   try { const key=JSON.parse(env('CAMPUS_JWT_JWK') || '{}');
+    for(const value of [key.d,key.k]) if(typeof value==='string' && value.length>0) redactions.push(value);
+   } catch { /* Invalid signing-key JSON must not be echoed into logs. */ }
+   const diagnostic=value=>{
+    if(typeof value!=='string') return undefined;
+    for(const secret of redactions) value=value.split(secret).join('[REDACTED]');
+    return value.replace(/\beyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g,'[REDACTED]')
+     .replace(/\bsb_secret_[A-Za-z0-9_-]+\b/g,'[REDACTED]')
+     .replace(/\b[a-f0-9]{64,}\b/gi,'[REDACTED]')
+     .replace(/\b(?:Bearer|Basic)\s+\S+/gi,'[REDACTED]').slice(0,2000);
+   };
+   console.error('CampusStack game-api error',{
+    message:e instanceof SyntaxError ? 'Invalid JSON input (contents omitted)' : diagnostic(e?.message),
+    code:diagnostic(e?.code),
+    details:diagnostic(e?.details),
+    hint:diagnostic(e?.hint)
+   });
    // SQL P0001 exceptions are user-facing validation failures. Never echo infrastructure errors.
    const safe=e.code==='P0001' || e instanceof SyntaxError;
    return reply({error:safe ? (e instanceof SyntaxError ? 'Invalid JSON request' : e.message) : 'Unable to reach the game server. Please retry.'},safe ? 400 : 503);
