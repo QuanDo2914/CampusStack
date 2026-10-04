@@ -10,7 +10,8 @@ export function makeHandler({rpc, env}) {
   const raw = env('CAMPUS_JWT_SECRET');
   if (!jwk && !raw) throw new Error('Server signing key is not configured');
   const parsed = jwk ? JSON.parse(jwk) : null;
-  signingKey ??= parsed ? importJWK(parsed, parsed.alg || 'ES256') : Promise.resolve(new TextEncoder().encode(raw));
+  // Import the configured private JWK for signing only; Web Crypto rejects combined usages.
+  signingKey ??= parsed ? importJWK({...parsed,key_ops:['sign']}, parsed.alg || 'ES256') : Promise.resolve(new TextEncoder().encode(raw));
   return new SignJWT({role:'anon',room_session_id:data.room_session_id})
    .setProtectedHeader({alg:parsed ? (parsed.alg || 'ES256') : 'HS256',typ:'JWT', ...(parsed?.kid ? {kid:parsed.kid} : {})})
    .setSubject(data.player_id).setIssuedAt().setExpirationTime('1h').sign(await signingKey);
