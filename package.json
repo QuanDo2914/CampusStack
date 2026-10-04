@@ -9,7 +9,8 @@
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "test:e2e": "playwright test",
     "test:server": "node tests/local-server.mjs",
-    "dev:local": "node scripts/dev-local.mjs"
+    "dev:local": "node scripts/dev-local.mjs",
+    "dev:bots": "node scripts/dev-local.mjs --bots"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

@@ -1,4 +1,5 @@
 export interface Player {
+  is_bot?: boolean;
   id: string;
   name: string;
   seat: number;
@@ -31,6 +32,8 @@ export interface Score {
   rank: number;
 }
 export interface Snapshot {
+  is_test_room?: boolean;
+  test_bots?: { paused: boolean; speed: string };
   rules_version?: number;
   dice?: number[];
   doubles?: number;

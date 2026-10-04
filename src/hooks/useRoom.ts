@@ -155,6 +155,52 @@ export function useRoom() {
       setBusy(false);
     }
   }
+  async function enterTest(name: string, count: number) {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      const { testRequest } = await import("../testBots/client");
+      let token = randomSecret();
+      try {
+        const pending = JSON.parse(
+          localStorage.getItem("campusstack.pending-test-token") || "null",
+        );
+        if (pending?.name === name && pending?.count === count)
+          token = pending.token;
+      } catch {}
+      localStorage.setItem(
+        "campusstack.pending-test-token",
+        JSON.stringify({ name, count, token }),
+      );
+      const r = await testRequest("create", {
+        name,
+        count,
+        player_token: token,
+      });
+      restoreTest(r, token);
+      localStorage.removeItem("campusstack.pending-test-token");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+  function restoreTest(r: Reply & { player_token?: string }, token?: string) {
+    const s: Session = {
+      player_id: r.player_id,
+      room_session_id: r.room_session_id,
+      room_code: r.room_code!,
+      player_token: token || r.player_token!,
+      access_token: r.access_token,
+    };
+    saveSession(s);
+    setSnapshot(null);
+    setSession(s);
+    acceptReply(r, s);
+  }
   function leave() {
     clearSession();
     setSession(null);
@@ -170,6 +216,8 @@ export function useRoom() {
     error,
     offset,
     enter,
+    enterTest,
+    restoreTest,
     act,
     leave,
   };

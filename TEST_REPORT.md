@@ -39,3 +39,28 @@ Browser checks used a local event-stream adapter, not hosted Supabase Realtime. 
 ## Bugs caught and repaired
 
 SQL alias ambiguity in trade/debt actions; nonunique test room codes; random event lookup re-evaluating random() per row; Jail-release salary omission; changed mortgage state in outstanding offers; duplicate mobile/desktop grant selector IDs; mortgaged property card incorrectly showing base rent.
+
+## Local bot harness (PR #1 continuation)
+
+- 62 Node tests passed: original 48 plus 14 bot tests.
+- TypeScript and production builds passed with `VITE_ENABLE_TEST_BOTS` false and
+  true. An independent esbuild test checks both flags with production mode and
+  confirms the bot setup/panel/controller are absent.
+- Disabled local server returned `Local test bots are disabled` for a direct
+  `/test-bots/create` request. Hosted game-api has no bot endpoint or action.
+- Chrome localhost UI created human + 1, + 2, + 3 bots; distinct characters and
+  full player lists appeared in the normal lobby.
+- Played a four-player match: chose Coffee, rolled 5+2, bought Campus Gym for $160,
+  ended the turn; bots automatically rolled, flew from Airport, bought assets,
+  paid fees/events, crossed START and returned the turn to the human.
+- Verified pause, Fast speed, reset to a new four-player lobby, and reload.
+- Production preview showed the ordinary multiplayer home with no bot option.
+- Automated fixtures exercise capped finite auctions, debt liquidation/payment,
+  bankruptcy, legal upgrades/Jail/Airport/event choices, authenticated controls,
+  trade rejection and all four normal bot victory results. Victory scenarios use
+  controlled database fixtures followed by normal actions, not full-length matches.
+
+Limitations: paused bots still face normal game deadlines; auctions remain 30s
+in Fast/Instant; reset creates a new room and pauses the previous one; local
+server restart discards rooms. No sophisticated negotiation or counters, and
+Classic/Chaos remains deferred. No production deployment was performed.

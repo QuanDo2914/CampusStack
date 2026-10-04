@@ -144,3 +144,41 @@ The Playwright suite creates independent storage contexts, tests the lobby, game
 - Local development rooms reset on server restart; hosted rooms persist in Postgres.
 - Old rooms are retained. Add manual retention/cleanup later if needed; there is no background scheduler in this MVP.
 - Supabase signing keys, Realtime delivery, permissions and CORS must be verified in the target project before public launch.
+
+### Local human vs computer test harness
+
+Stop any older local preview, run `npm run dev:bots` in the source checkout, then
+open the Vite localhost URL. If ports are occupied, use e.g.
+`CAMPUS_LOCAL_PORT=8790 CAMPUS_VITE_PORT=5177 npm run dev:bots`.
+Both servers bind to loopback; Vite fails clearly rather than silently choosing an
+unapproved origin when its selected port is occupied.
+Choose **🤖 VS COMPUTER — TEST MODE**, enter your name and select 1–3 bots
+(default 2). Choose your character in the normal lobby and start the match.
+The existing board, actions, trade UI and victory screen are shared with multiplayer.
+
+`npm run dev:local` runs ordinary local multiplayer with bots disabled. Stop the
+process to discard ephemeral rooms. Never set `VITE_ENABLE_TEST_BOTS=true` in
+Vercel or Supabase. Both Vite development mode and that explicit flag are required;
+production builds remove the bot menu/setup/panel even if the flag is accidentally
+set. The local client also requires a loopback development server URL.
+
+The server flag `CAMPUS_ENABLE_TEST_BOTS=true` is set only by `dev:bots`. Bot
+endpoints exist only in `tests/local-server.mjs`, bound to `127.0.0.1`, with an
+explicit loopback-origin allowlist. They are disabled when `TEST_DATABASE_URL` is
+provided. No bot endpoint, SQL migration or hosted Edge Function change is needed.
+Local test-room metadata is stored in an ephemeral private table; bot tokens stay
+in server memory. Human identity uses the normal saved session and scoped stream.
+
+The developer panel offers pause/resume, skip delay, Normal (750ms), Fast (150ms),
+and Instant (10ms), plus reset into a fresh lobby with the same bot count. Pause
+stops automation; ordinary 30-second turn/auction clocks continue. Fast/Instant
+shorten decisions, not engine deadlines. Reset pauses the previous room. Reload
+reconnects your saved seat; restarting the local server discards all local rooms.
+
+Bots keep a $300 reserve, value set/station/side progress, use stable per-player
+auction caps, develop evenly, choose strategic Airport destinations, use Jail
+passes/bail/doubles, and recover debt by selling upgrades and mortgaging before
+bankruptcy. They accept or decline human trades and reject immediate station/side
+victory giveaways. All decisions use the existing authenticated transactional RPC;
+no React state mutations, external AI, special human benefits or alternate engine.
+Classic/Chaos is still deferred; this is a testing environment for expanded rules.

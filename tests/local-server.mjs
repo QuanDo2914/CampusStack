@@ -1,5 +1,6 @@
 // Development-only transport. Production uses Supabase Edge Functions + Realtime.
 import http from "node:http";
+import { BotController } from "../src/testBots/botController.mjs";
 import { randomBytes } from "node:crypto";
 import { jwtVerify } from "jose";
 import { database } from "./database.mjs";
@@ -7,18 +8,50 @@ import { makeHandler } from "../supabase/functions/game-api/handler.mjs";
 const db = await database({ modern: process.env.CAMPUS_LEGACY_TEST !== "1" });
 const signingSecret = randomBytes(32).toString("hex");
 const streams = new Map();
+const vitePort = Number(process.env.CAMPUS_VITE_PORT || 5173);
+if (!Number.isInteger(vitePort) || vitePort < 1024 || vitePort > 65535)
+  throw Error("Invalid local Vite port");
+const origins = [...new Set([5173, 5176, 5177, vitePort])]
+  .flatMap((port) => [`http://localhost:${port}`, `http://127.0.0.1:${port}`])
+  .join(",");
 const env = (name) =>
   name === "CAMPUS_LOCAL_TEST"
     ? "1"
     : name === "CAMPUS_JWT_SECRET"
       ? signingSecret
       : name === "ALLOWED_ORIGINS"
-        ? "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5176,http://127.0.0.1:5176"
+        ? origins
         : undefined;
+let bots;
+const rpc = async (name, args) => {
+  const result = await db.rpc(name, args);
+  if (result?.snapshot && bots)
+    result.snapshot = bots.annotate(result.snapshot);
+  if (result?.snapshot)
+    for (const stream of streams.get(result.snapshot.room_session_id) || [])
+      stream.write(`data: ${JSON.stringify(result.snapshot)}\n\n`);
+  return result;
+};
+bots = new BotController({
+  db,
+  rpc,
+  enabled:
+    process.env.CAMPUS_ENABLE_TEST_BOTS === "true" &&
+    !process.env.TEST_DATABASE_URL,
+});
+await bots.initialize();
+const botTimer = setInterval(
+  () =>
+    bots
+      .tick()
+      .catch(() => console.error("Local bot controller infrastructure error")),
+  25,
+);
 const handler = makeHandler({
   env,
   rpc: async (name, args) => {
     let result = await db.rpc(name, args);
+    if (result?.snapshot) result.snapshot = bots.annotate(result.snapshot);
     // Tests may shorten a match in this development-only harness. Production has no such option.
     const testSeconds = Number(process.env.CAMPUS_TEST_MATCH_SECONDS);
     if (
@@ -107,7 +140,9 @@ const server = http.createServer(async (req, res) => {
         "Cache-Control": "no-store",
         Connection: "keep-alive",
       });
-      res.write(`data: ${JSON.stringify(rows.rows[0].snapshot)}\n\n`);
+      res.write(
+        `data: ${JSON.stringify(bots.annotate(rows.rows[0].snapshot))}\n\n`,
+      );
       const set = streams.get(b.room_session_id) || new Set();
       streams.set(b.room_session_id, set);
       set.add(res);
@@ -127,6 +162,62 @@ const server = http.createServer(async (req, res) => {
       res.end();
       return;
     }
+  }
+  if (req.url?.startsWith("/test-bots/")) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Headers", "content-type");
+    if (req.method === "OPTIONS") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+    try {
+      if (!bots.enabled) throw Error("Local test bots are disabled");
+      if (req.method !== "POST") throw Error("POST required");
+      const b = JSON.parse(body);
+      let result;
+      if (req.url === "/test-bots/create") {
+        if (
+          typeof b.name !== "string" ||
+          !b.name.trim() ||
+          b.name.length > 24 ||
+          !/^[a-f0-9]{64}$/.test(b.player_token)
+        )
+          throw Error("Invalid test setup");
+        result = await bots.create(b.name, b.count, b.player_token);
+      } else if (req.url === "/test-bots/control")
+        result = await bots.control(b);
+      else throw Error("Invalid test endpoint");
+      if (result.player_id) {
+        const auth = await handler(
+          new Request("http://localhost/action", {
+            method: "POST",
+            headers: { origin, "content-type": "application/json" },
+            body: JSON.stringify({
+              action: "sync",
+              player_id: result.player_id,
+              room_session_id: result.room_session_id,
+              player_token: result.player_token || b.player_token,
+              request_id: crypto.randomUUID(),
+              revision: 0,
+              payload: {},
+            }),
+          }),
+        );
+        if (!auth.ok) throw Error("Test session could not reconnect");
+        result = { ...result, ...(await auth.json()) };
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          error: e.code ? "Local test request rejected" : e.message,
+        }),
+      );
+    }
+    return;
   }
   if (req.url !== "/action") {
     res.writeHead(404);
@@ -148,6 +239,7 @@ server.listen(Number(process.env.CAMPUS_LOCAL_PORT) || 8787, "127.0.0.1", () =>
   ),
 );
 async function stop() {
+  clearInterval(botTimer);
   for (const set of streams.values()) for (const s of set) s.end();
   server.close();
   await db.stop();

@@ -1,6 +1,6 @@
 import { ExpandedGame } from "./components/expanded/GameScreen";
 import { VictoryScreen } from "./components/expanded/VictoryScreen";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useRoom } from "./hooks/useRoom";
 import { useMatchClock } from "./hooks/useMatchClock";
 import { HomeScreen } from "./components/HomeScreen";
@@ -8,9 +8,14 @@ import { LobbyScreen } from "./components/LobbyScreen";
 import { GameScreen } from "./components/GameScreen";
 import { ResultsScreen } from "./components/ResultsScreen";
 import { RulesModal } from "./components/RulesModal";
+import { testBotsEnabled } from "./testBots/guard";
+const TestBots = import.meta.env.DEV
+  ? lazy(() => import("./testBots/TestBots"))
+  : null;
 export default function App() {
   const game = useRoom();
   const clock = useMatchClock(game.snapshot, game.offset, game.act, game.busy);
+  const [testSetup, setTestSetup] = useState(false);
   const [rules, setRules] = useState(false);
   return (
     <main>
@@ -55,7 +60,20 @@ export default function App() {
         </div>
       )}
       {!game.session ? (
-        <HomeScreen busy={game.busy} onEnter={game.enter} />
+        <>
+          <HomeScreen busy={game.busy} onEnter={game.enter} />
+          {testBotsEnabled && TestBots && (
+            <Suspense fallback={null}>
+              <TestBots
+                setup={testSetup}
+                onOpen={() => setTestSetup(true)}
+                onClose={() => setTestSetup(false)}
+                busy={game.busy}
+                onCreate={game.enterTest}
+              />
+            </Suspense>
+          )}
+        </>
       ) : !game.snapshot ? (
         <section className="recovery">
           <h1>Finding your room…</h1>
@@ -102,6 +120,19 @@ export default function App() {
           onAction={game.act}
         />
       )}
+      {testBotsEnabled &&
+        TestBots &&
+        game.snapshot?.is_test_room &&
+        game.session && (
+          <Suspense fallback={null}>
+            <TestBots
+              key={game.session.room_session_id}
+              session={game.session}
+              snapshot={game.snapshot}
+              onReset={game.restoreTest}
+            />
+          </Suspense>
+        )}
       <footer>
         <span>CampusStack · An original campus property game</span>
         <span>2–4 players · Buy. Build. Trade.</span>
