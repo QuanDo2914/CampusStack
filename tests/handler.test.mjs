@@ -14,7 +14,7 @@ test('rate limiting is transactional and sync does not change gameplay revision'
 });
 
 test('imported ES256 JWK signs room JWTs with the matching key id',async()=>{
- const {privateKey,publicKey}=await generateKeyPair('ES256',{extractable:true});const jwk={...await exportJWK(privateKey),kid:randomUUID()};
+ const {privateKey,publicKey}=await generateKeyPair('ES256',{extractable:true});const jwk={...await exportJWK(privateKey),kid:randomUUID(),key_ops:['sign','verify']};
  const handler=makeHandler({rpc:db.rpc,env:name=>name==='CAMPUS_JWT_JWK' ? JSON.stringify(jwk) : undefined});
  const response=await handler(new Request('http://local/action',{method:'POST',headers:{origin:'http://localhost:5173','x-forwarded-for':randomUUID()},body:JSON.stringify({action:'create',name:'ES256',player_token:randomBytes(32).toString('hex')})}));assert.equal(response.status,200);
  const data=await response.json();assert.equal(decodeProtectedHeader(data.access_token).kid,jwk.kid);const {payload}=await jwtVerify(data.access_token,publicKey);assert.equal(payload.room_session_id,data.room_session_id);assert.equal(payload.role,'anon');
