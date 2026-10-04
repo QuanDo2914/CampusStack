@@ -1,0 +1,42 @@
+[
+  {
+    "id": "food",
+    "name": "Food Court",
+    "color": "#e98245"
+  },
+  {
+    "id": "wellness",
+    "name": "Active Campus",
+    "color": "#68ac69"
+  },
+  {
+    "id": "arts",
+    "name": "Arts Quarter",
+    "color": "#c66bb3"
+  },
+  {
+    "id": "housing",
+    "name": "Residence Row",
+    "color": "#dfb447"
+  },
+  {
+    "id": "science",
+    "name": "Discovery District",
+    "color": "#4399cf"
+  },
+  {
+    "id": "innovation",
+    "name": "Innovation District",
+    "color": "#8973ca"
+  },
+  {
+    "id": "social",
+    "name": "Union Square",
+    "color": "#e17c91"
+  },
+  {
+    "id": "green",
+    "name": "Green Quarter",
+    "color": "#3caa9c"
+  }
+]

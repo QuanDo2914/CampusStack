@@ -1,46 +1,41 @@
-# CampusStack verification — October 2, 2026
+# Expanded CampusStack verification — October 4, 2026
 
-## Phase results
+## Automated
 
-| Phase | Implemented | Verification |
-|---|---|---|
-| 1 | React/Vite/TypeScript scaffold, create/join, persisted identity, lobby, realtime player list, host-only start, room-scoped snapshot access | Four database test groups passed; two browser storage identities joined the same room, both rosters updated, host start synchronized, guest refresh retained its seat. |
-| 2 | Original 20-space board, authoritative turns/die/movement, START payment, 30-second timeout | Movement, duplicate rolls, turn authorization, timeout idempotency and stale revisions passed. Deterministic SQL tests verified both exact START landing and crossing pay $100 once. |
-| 3 | Buy/skip, ownership, rent, cash, events, fees, event feed | Purchases cannot double-charge; insufficient cash and unauthorized purchases fail; mandatory payments allow negative cash; own-property landing charges nothing. Browser test observed Quan buy Bike Hub, Alex pay $25 rent, and both clients display $1,385/$1,475 balances. |
-| 4 | Server match deadline, client-triggered finish, frozen net worth leaderboard and ties | Early finish rejected as a state change; multiple finish requests produced one finalization event; expired rolls and purchases did not mutate gameplay. Browser countdown-to-results verified in a 12-second match configured only in the local test harness. Both sessions showed the same tied leaderboard. Normal SQL start remains 15 minutes. |
-| 5 | Responsive layouts, step animation, reduced-motion support, rules, reconnect attempts, saved seats, presence, validation, rate limits, deployment configuration | TypeScript and production build passed. Desktop and 390px/320px phone layouts inspected. A narrow grid overflow was fixed; final DOM page width equaled the 320px viewport. Rules modal worked on mobile; refresh preserved gameplay and identity. |
+- `npm test`: **48 passed, 0 failed**.
+- Includes original 20 legacy database/API tests and 25 expanded/compatibility tests and 3 frontend render tests.
+- Two dice, doubles/extra roll, third doubles Jail; exact START landing/crossing and Jail-release salary.
+- Purchases, automatic rent, stations/scaling, color sets, even upgrades/downgrades, mortgages/unmortgages.
+- All four exact victories, incomplete-side/set rejection, maximum-level empire requirement, finalized mutation rejection and one winner/event.
+- Airport destination effects, no free ownership/salary, invalid/self-loop destination rejection.
+- Auction bid/cash validation, timeout settlement once, auction victory.
+- Trade cash/ownership transfers, retry idempotency, counteroffers, stale assets/cash/mortgage-state rejection, trade victory.
+- Mandatory debt, mortgage recovery, payment, bankruptcy elimination/creditor asset transfer, bank asset return, timeout liquidation, last survivor.
+- All 30 event cards, interactive grants/gifts and one-use rent protection/bonus.
+- Migration of an already active legacy room; explicit expanded entry; old-client/version compatibility.
+- Existing RLS, entry capacity, signed room JWTs, ES256 import regression, safe error diagnostics and rate-limit tests preserved.
+- TypeScript checks via `npm run build`: passed. Production Vite build: passed.
+- Frontend renders an empty fresh board, all action phases, unique auction labels, correct zero mortgage rent, and all four victory screens.
+- No lint command/configuration is present.
 
-## Final automated checks
+Tests use PGlite, which serializes connections. Promise-based concurrent calls test deduplication outcomes; they do not prove native Postgres row-lock behavior. A dedicated empty native test database can be supplied through TEST_DATABASE_URL. Never use production for the destructive test bootstrap.
 
-- `npm test`: **19/19 test groups passed**, using the actual SQL migrations in PGlite and the actual Edge API handler.
-- `npm run build`: **passed** (TypeScript + Vite).
-- JWT tests: HS256 and imported ES256 signing passed, including a JWK without an explicit `alg` field.
-- RLS tests: no-claim enumeration returns zero rows; a room claim reads only its room; browser mutation and private table/function access denied.
-- Dependencies: installation audit reported zero known vulnerabilities at the time of implementation.
+## Browser verification
 
-## Browser evidence
+Real app and local PostgreSQL-backed transport, through Chrome's connected browser tools:
 
-The app’s in-app browser tools verified two independent localStorage identities using `localhost` and `127.0.0.1`:
+- Separate localhost and 127.0.0.1 origins for independent localStorage/session identities.
+- Quan created a room; Alex joined; robot selection synchronized; unique selected character unavailable to the other player.
+- Host started; both boards/current turn synchronized.
+- Rolled 4 + 4; mandatory $75 fee; extra roll 3 + 6; purchased Study Commons for $200. Both clients displayed ownership and $1,225 host cash.
+- Guest refresh restored Alex and the committed property state.
+- Fresh version-2 entry after a local server restart successfully created/joined and started a new room. An auction for Green Street Pizza accepted Alex’s $80 bid and synchronized it to Quan. At timeout Alex received it for $80, both clients showed $1,420 guest cash, and the property detail card displayed all six rent levels.
+- Quan offered Study Commons for $125; Alex received and accepted. Both showed Alex owning it, Quan $1,350 and Alex $1,375.
+- Phone viewport: turn controls above board, board horizontally scrollable, no horizontal page overflow. Property details and trading dialogs accessible through real controls.
+- Desktop and mobile screenshots saved alongside the project output.
 
-1. Create room; host start disabled with one player.
-2. Join by code; both player lists synchronize.
-3. Host starts; both clients display the game.
-4. Roll, automatic movement, purchase, rent and turn handoff synchronize.
-5. Refresh restores identity, balances and property ownership.
-6. Timeout advances inactive turns.
-7. Mobile Rules modal and narrow layouts inspected.
-8. Countdown expiry automatically finalizes; both browsers display the identical leaderboard.
+Browser checks used a local event-stream adapter, not hosted Supabase Realtime. The expanded hosted migration, native concurrency/staging test, production function deployment and two-mode behavior remain unverified. The old Playwright suite targets legacy rules; it was not rerun during this upgrade. Optional sound was not added because no sound system exists.
 
-Saved screenshots: `../campusstack-preview.png` and `../campusstack-results.png`.
+## Bugs caught and repaired
 
-## Failures, workarounds and remaining checks
-
-- Native PostgreSQL could not initialize inside the authoring sandbox because OS shared-memory operations were denied. PGlite executes PostgreSQL SQL/PLpgSQL and RLS locally, but serializes connections. **Hosted concurrent row-lock behavior is not yet independently verified.** `TEST_DATABASE_URL` supports tests against a disposable native PostgreSQL cluster.
-- Standalone Playwright Chromium launch failed due to macOS Mach-port sandbox restrictions. The automated Playwright browser suite was written, but **has not completed here**. Equivalent core flows were verified using the in-app browser tools; these used separate storage origins rather than separate physical devices.
-- The local transport uses an authenticated HTTP event stream. **Actual Supabase Realtime delivery, hosted Edge Function deployment and Vercel deployment remain unverified** until the user configures those services.
-- No credentials were available or hardcoded. No Supabase or Vercel resources were provisioned or published.
-- One build invocation used the machine’s default Node 18 and restricted home npm cache; rerunning with Node 22 and a workspace cache passed.
-- Vite’s file watcher did not pick up edits reliably in this workspace; development polling was enabled.
-- No Cron/scheduled jobs, account login, trading, auctions, upgrades, mortgages, selling or elimination were added.
-
-Follow the hosted two-device smoke test in `README.md` before public launch.
+SQL alias ambiguity in trade/debt actions; nonunique test room codes; random event lookup re-evaluating random() per row; Jail-release salary omission; changed mortgage state in outstanding offers; duplicate mobile/desktop grant selector IDs; mortgaged property card incorrectly showing base rent.

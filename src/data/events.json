@@ -1,0 +1,242 @@
+[
+  {
+    "id": 0,
+    "name": "Scholarship",
+    "kind": "cash",
+    "value": 150,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $150."
+  },
+  {
+    "id": 1,
+    "name": "Internship Bonus",
+    "kind": "cash",
+    "value": 200,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $200."
+  },
+  {
+    "id": 2,
+    "name": "Free Coffee",
+    "kind": "cash",
+    "value": 50,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $50."
+  },
+  {
+    "id": 3,
+    "name": "Research Grant",
+    "kind": "cash",
+    "value": 175,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $175."
+  },
+  {
+    "id": 4,
+    "name": "Campus Competition",
+    "kind": "cash",
+    "value": 125,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $125."
+  },
+  {
+    "id": 5,
+    "name": "Tax Refund",
+    "kind": "cash",
+    "value": 100,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $100."
+  },
+  {
+    "id": 6,
+    "name": "Alumni Gift",
+    "kind": "cash",
+    "value": 150,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $150."
+  },
+  {
+    "id": 7,
+    "name": "Gym Challenge",
+    "kind": "cash",
+    "value": 75,
+    "icon": "\ud83c\udf93",
+    "description": "Collect $75."
+  },
+  {
+    "id": 8,
+    "name": "Parking Ticket",
+    "kind": "cash",
+    "value": -75,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $75."
+  },
+  {
+    "id": 9,
+    "name": "Laptop Repair",
+    "kind": "cash",
+    "value": -120,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $120."
+  },
+  {
+    "id": 10,
+    "name": "Construction Fee",
+    "kind": "cash",
+    "value": -100,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $100."
+  },
+  {
+    "id": 11,
+    "name": "Textbooks",
+    "kind": "cash",
+    "value": -90,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $90."
+  },
+  {
+    "id": 12,
+    "name": "Missed Bus",
+    "kind": "cash",
+    "value": -40,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $40."
+  },
+  {
+    "id": 13,
+    "name": "Dorm Damage",
+    "kind": "cash",
+    "value": -125,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $125."
+  },
+  {
+    "id": 14,
+    "name": "Tuition Supplement",
+    "kind": "cash",
+    "value": -150,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $150."
+  },
+  {
+    "id": 15,
+    "name": "Club Dues",
+    "kind": "cash",
+    "value": -60,
+    "icon": "\ud83e\uddfe",
+    "description": "Pay $60."
+  },
+  {
+    "id": 16,
+    "name": "Early Lecture",
+    "kind": "move",
+    "value": 3,
+    "icon": "\ud83c\udfb4",
+    "description": "Move forward 3 spaces. No START salary."
+  },
+  {
+    "id": 17,
+    "name": "Forgotten Notes",
+    "kind": "move",
+    "value": -3,
+    "icon": "\ud83c\udfb4",
+    "description": "Move backward 3 spaces."
+  },
+  {
+    "id": 18,
+    "name": "Homecoming",
+    "kind": "travel",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Travel to START. Event travel has no salary."
+  },
+  {
+    "id": 19,
+    "name": "Campus Security",
+    "kind": "jail",
+    "value": 30,
+    "icon": "\ud83c\udfb4",
+    "description": "Go directly to Jail."
+  },
+  {
+    "id": 20,
+    "name": "Transit Pass",
+    "kind": "station",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Travel to the nearest station."
+  },
+  {
+    "id": 21,
+    "name": "Study Abroad",
+    "kind": "travel",
+    "value": 10,
+    "icon": "\ud83c\udfb4",
+    "description": "Travel to the Airport and choose a destination."
+  },
+  {
+    "id": 22,
+    "name": "Music Festival",
+    "kind": "travel",
+    "value": 12,
+    "icon": "\ud83c\udfb4",
+    "description": "Travel to Music Hall."
+  },
+  {
+    "id": 23,
+    "name": "Birthday Fund",
+    "kind": "collect",
+    "value": 25,
+    "icon": "\ud83c\udfb4",
+    "description": "Collect up to $25 of available cash from each other player."
+  },
+  {
+    "id": 24,
+    "name": "Group Project",
+    "kind": "pay",
+    "value": 25,
+    "icon": "\ud83c\udfb4",
+    "description": "Pay each other player $25."
+  },
+  {
+    "id": 25,
+    "name": "Peer Scholarship",
+    "kind": "target",
+    "value": 100,
+    "icon": "\ud83c\udfb4",
+    "description": "Choose another player to receive $100 from the bank."
+  },
+  {
+    "id": 26,
+    "name": "Renovation Grant",
+    "kind": "upgrade",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Choose an eligible property for one free upgrade."
+  },
+  {
+    "id": 27,
+    "name": "Quiet Hours",
+    "kind": "shield",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Your next rent payment is waived."
+  },
+  {
+    "id": 28,
+    "name": "Campus Ambassador",
+    "kind": "bonus",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Collect double rent on your next rent collection."
+  },
+  {
+    "id": 29,
+    "name": "Jail Pass",
+    "kind": "pass",
+    "value": 0,
+    "icon": "\ud83c\udfb4",
+    "description": "Keep one pass to leave Jail for free."
+  }
+]
