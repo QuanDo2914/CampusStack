@@ -66,7 +66,7 @@
 }
 .tabletop-app .expanded-layout {
   grid-template-columns: minmax(0, 1fr) 224px;
-  gap: 18px;
+  gap: 32px;
   align-items: start;
 }
 .tabletop-app .board-scroll {
@@ -86,7 +86,8 @@
 }
 .tabletop-plane.campus-board {
   position: absolute;
-  inset: 24px 18px 24px;
+  /* Leave an open tabletop border; reserve extra space below for board depth. */
+  inset: calc(5% + 19px) calc(5% + 18px) calc(5% + 29px);
   min-width: 0;
   aspect-ratio: auto;
   grid-template-columns: 1.28fr repeat(9, minmax(0, 1fr)) 1.28fr;
@@ -466,7 +467,7 @@
 .tabletop-stage.campus-center {
   position: absolute;
   left: 50%;
-  top: 49%;
+  top: calc(50% - 5px);
   transform: translate(-50%, -50%);
   width: clamp(350px, 43%, 520px);
   max-height: calc(100% - 150px);
@@ -1060,7 +1061,7 @@
   }
   .tabletop-app .expanded-layout {
     grid-template-columns: minmax(0, 1fr) 258px;
-    gap: 28px;
+    gap: 44px;
   }
   .tabletop-stage {
     width: clamp(430px, 42%, 590px) !important;
@@ -1134,11 +1135,15 @@
     --scene-height: calc(100dvh - 190px);
   }
   .tabletop-stage.campus-center {
-    padding: 13px 20px 11px;
+    padding: 9px 20px 9px;
     max-height: calc(100% - 132px);
   }
   .stage-eyebrow {
-    margin-bottom: 7px;
+    margin-bottom: 5px;
+  }
+  .tabletop-stage .turn-pill > .tabletop-token {
+    width: 38px;
+    height: 40px;
   }
   .tabletop-stage .campus-turn h2 {
     font-size: 20px;
@@ -1147,11 +1152,11 @@
     margin-bottom: 10px;
   }
   .physical-dice.campus-dice {
-    margin: 11px 0 13px;
+    margin: 8px 0 10px;
   }
   .physical-dice .pip-die {
-    width: 53px;
-    height: 53px;
+    width: 49px;
+    height: 49px;
     padding: 9px;
   }
   .tabletop-stage .center-tools {
