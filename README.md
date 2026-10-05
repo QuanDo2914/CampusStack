@@ -182,3 +182,23 @@ bankruptcy. They accept or decline human trades and reject immediate station/sid
 victory giveaways. All decisions use the existing authenticated transactional RPC;
 no React state mutations, external AI, special human benefits or alternate engine.
 Classic/Chaos is still deferred; this is a testing environment for expanded rules.
+
+### Desktop tabletop presentation
+
+Expanded games use a raised, gently angled CSS board with original inline SVG
+campus stickers and character pieces. The upright center stage and player rail
+consume the same snapshots/action callbacks as before. No rendering library or
+new backend metadata is required. Short tile labels are presentation-only; full
+property names remain available in accessible labels, tooltips and deed dialogs.
+
+Board height responds to desktop viewport height; the compact header, collapsed
+history and expandable player rail preserve the entire 40-space loop at normal
+browser zoom. Verified targets: 1366×768, 1440×900, 1536×864 and 1920×1080.
+Smaller widths retain a scrollable desktop composition; phone layouts are not
+optimized in this pass. The rendering components under `src/components/tabletop`
+are separate from room state and can be reused by a future landscape client.
+
+Ownership badges, mortgage locks, house/landmark markers and complete-set accents
+come from authoritative snapshot data. Dice/token/cash/event animations are purely
+visual and respect reduced-motion preferences. Detailed trades, deeds and property
+management remain accessible through the existing dialogs; game rules are unchanged.

@@ -1,3 +1,4 @@
+import { CampusIcon } from "../tabletop/CampusIcon";
 import { campusBoard, owned, completeGroups, levels } from "../../lib/expanded";
 import { money } from "../../lib/board";
 import type { Act, Snapshot } from "../../types/game";
@@ -44,7 +45,8 @@ export function PropertyManager({
           return (
             <article key={b.index}>
               <h3>
-                {b.icon} {b.name}
+                <CampusIcon kind={b.kind} category={b.category} name={b.name} />
+                {b.name}
               </h3>
               <p>
                 {a.mortgaged ? "MORTGAGED" : levels[a.level]} ·{" "}

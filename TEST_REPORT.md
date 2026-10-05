@@ -64,3 +64,26 @@ Limitations: paused bots still face normal game deadlines; auctions remain 30s
 in Fast/Instant; reset creates a new room and pauses the previous one; local
 server restart discards rooms. No sophisticated negotiation or counters, and
 Classic/Chaos remains deferred. No production deployment was performed.
+
+## Desktop tabletop UI pass
+
+- 63 Node tests pass: all 62 prior tests plus a tabletop regression covering full
+  accessible property names, 40-space rendering, shared occupancy, mortgages and
+  Landmark development. TypeScript and production build pass.
+- Verified exact CSS viewports with devicePixelRatio=1 and no CSS zoom:
+  1366×768, 1440×900, 1536×864, 1920×1080. At each size the document dimensions
+  equal the viewport; all 40 tile bounds are inside it. The normal-turn center
+  stage has no internal scrolling and its main controls are visible.
+- Local browser exercised human roll, Airport selection, purchase, doubles,
+  property deed, property manager and trade dialogs; observed normal bot turns,
+  auctions, complete districts and building markers using the existing bot harness.
+- At 1366×768, Airport/property offer and auction stages fit without internal
+  scrolling. Original 30-second server timers, bidding, ownership and cash remain
+  synchronized. No schema, RPC, bot strategy/controller or engine changes.
+- Screenshots captured at all four target sizes; requested 1366×768, 1440×900 and
+  1920×1080 images are delivered in chat alongside the source update.
+
+Desktop-first limitations: narrow widths retain desktop composition with scrolling;
+phone-specific sheets/layouts are deferred. The 2.5D treatment uses restrained CSS
+perspective and layered shadows rather than a 3D engine. Long history, holdings and
+complex dialogs scroll within their own panels. No main merge or production deploy.

@@ -51,7 +51,10 @@ export default function TestBots({
   }
   if (session && snapshot)
     return (
-      <aside className="entry-card" style={{ marginTop: 20, padding: 20 }}>
+      <aside
+        className="entry-card local-bot-panel"
+        style={{ marginTop: 20, padding: 20 }}
+      >
         <strong>🤖 Local test controls</strong>
         <p>
           Automation only. Normal turn and auction timers continue while bots

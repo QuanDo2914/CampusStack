@@ -46,34 +46,18 @@ export function ExpandedGame({
   }, [toast]);
   return (
     <>
-      <div className="expanded-heading">
+      <div className="expanded-heading tabletop-toolbar">
         <div>
-          <span className="eyebrow">The campus is yours to conquer</span>
-          <h1>One board. Four ways to win.</h1>
+          <span className="eyebrow">CAMPUS TABLETOP</span>
+          <h1>Your next chapter starts here.</h1>
         </div>
-        <span className="game-strategies">
-          🏁 Survive · 🧱 Control a side · 🚉 Collect transit · 🏗️ Build an
-          empire
-        </span>
+        <details className="strategy-disclosure">
+          <summary>Four ways to win</summary>
+          <VictoryProgress snapshot={snapshot} playerId={me.id} />
+        </details>
       </div>
       <div className="expanded-layout">
         <div className="expanded-board-column">
-          <div className="mobile-turn-area">
-            <CampusTurnControls
-              snapshot={snapshot}
-              session={session}
-              busy={busy}
-              connected={connected}
-              seconds={turnSeconds}
-              onAction={onAction}
-              onManage={() => setManage(true)}
-              onTrade={() => setTrade(true)}
-            />
-          </div>
-          <p className="scroll-hint">
-            Swipe the board to explore all four sides. Tap any property for
-            details.
-          </p>
           <div className="board-scroll">
             <CampusBoard
               snapshot={snapshot}
@@ -86,16 +70,8 @@ export function ExpandedGame({
                 connected
               }
             >
-              <div className="mobile-board-label">
-                <h2>CampusStack.</h2>
-                <p>
-                  Buy. Build. Trade.
-                  <br />
-                  Own the campus.
-                </p>
-                <p>{snapshot.events.at(-1)?.message}</p>
-              </div>
               <div className="desktop-center-content">
+                <span className="stage-eyebrow">MEET IN THE QUAD</span>
                 <CampusTurnControls
                   snapshot={snapshot}
                   session={session}
@@ -106,7 +82,6 @@ export function ExpandedGame({
                   onManage={() => setManage(true)}
                   onTrade={() => setTrade(true)}
                 />
-                <VictoryProgress snapshot={snapshot} playerId={me.id} />
               </div>
             </CampusBoard>
           </div>

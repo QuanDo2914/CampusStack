@@ -1,3 +1,5 @@
+import { CampusIcon } from "../tabletop/CampusIcon";
+import { PlayerToken } from "../tabletop/PlayerToken";
 import { useState, useId } from "react";
 import { campusBoard } from "../../lib/expanded";
 import { money } from "../../lib/board";
@@ -23,7 +25,12 @@ export function AuctionPanel({
     <section className="auction-panel" aria-label="Live property auction">
       <span className="eyebrow">Live auction · {seconds}s</span>
       <h2>
-        {campusBoard[a.space].icon} {campusBoard[a.space].name}
+        <CampusIcon
+          kind={campusBoard[a.space].kind}
+          category={campusBoard[a.space].category}
+          name={campusBoard[a.space].name}
+        />{" "}
+        {campusBoard[a.space].name}
       </h2>
       <p>
         High bid: <strong>{money(a.bid)}</strong>
@@ -31,6 +38,19 @@ export function AuctionPanel({
           ? ` · ${snapshot.players.find((p) => p.id === a.bidder)?.name}`
           : " · No bids yet"}
       </p>
+      <div className="auction-bidders">
+        {snapshot.players
+          .filter((p) => !p.bankrupt)
+          .map((p) => (
+            <span
+              key={p.id}
+              className={a.bidder === p.id ? "highest-bidder" : ""}
+              title={p.name}
+            >
+              <PlayerToken player={p} compact />
+            </span>
+          ))}
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();

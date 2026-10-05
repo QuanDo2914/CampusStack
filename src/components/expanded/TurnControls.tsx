@@ -1,6 +1,8 @@
-import { campusBoard, character } from "../../lib/expanded";
+import { campusBoard } from "../../lib/expanded";
 import { money } from "../../lib/board";
 import type { Act, Snapshot, Session } from "../../types/game";
+import { PlayerToken } from "../tabletop/PlayerToken";
+import { CampusIcon } from "../tabletop/CampusIcon";
 import { Dice } from "./Dice";
 import { AuctionPanel } from "./AuctionPanel";
 import { EventCard } from "./EventCard";
@@ -29,10 +31,6 @@ export function CampusTurnControls({
   const disabled = busy || !connected;
   return (
     <>
-      <div className="center-brand">
-        CampusStack<span>.</span>
-        <small>Buy. Build. Trade. Own the campus.</small>
-      </div>
       {snapshot.phase === "auction" ? (
         <AuctionPanel
           key={snapshot.auction?.space}
@@ -45,13 +43,27 @@ export function CampusTurnControls({
       ) : (
         <section className="campus-turn">
           <div className="turn-pill">
-            {character(p).icon} {mine ? "YOUR TURN" : `${p.name}’s turn`}{" "}
-            <span>{seconds}s</span>
+            <PlayerToken player={p} />
+            <span className="turn-identity">
+              <small>{mine ? "YOUR TURN" : "CURRENT PLAYER"}</small>
+              <strong>{p.name}</strong>
+            </span>{" "}
+            <span className={`stage-clock ${seconds <= 10 ? "urgent" : ""}`}>
+              {seconds}s
+            </span>
           </div>
-          <Dice
-            values={snapshot.dice}
-            busy={busy && snapshot.phase === "awaiting_roll"}
-          />
+          {(snapshot.phase === "awaiting_roll" ||
+            snapshot.phase === "management") && (
+            <Dice
+              values={snapshot.dice}
+              rollKey={
+                snapshot.events
+                  .filter((e) => e.message.includes(" rolled "))
+                  .at(-1)?.sequence
+              }
+              busy={busy && snapshot.phase === "awaiting_roll"}
+            />
+          )}
           {snapshot.phase === "awaiting_roll" && (
             <>
               <h2>
@@ -104,15 +116,30 @@ export function CampusTurnControls({
             </>
           )}
           {snapshot.phase === "awaiting_purchase" && (
-            <>
+            <div className="stage-deed">
               <h2>
-                {campusBoard[snapshot.pending_property!].icon}{" "}
+                <CampusIcon
+                  kind={campusBoard[snapshot.pending_property!].kind}
+                  category={campusBoard[snapshot.pending_property!].category}
+                  name={campusBoard[snapshot.pending_property!].name}
+                />{" "}
                 {campusBoard[snapshot.pending_property!].name}
               </h2>
-              <p>
-                Price {money(campusBoard[snapshot.pending_property!].price)} ·
-                Base rent {money(campusBoard[snapshot.pending_property!].rent)}
-              </p>
+              <div className="deed-offer-values">
+                <span>
+                  Purchase
+                  <strong>
+                    {money(campusBoard[snapshot.pending_property!].price)}
+                  </strong>
+                </span>
+                <span>
+                  Base rent
+                  <strong>
+                    {money(campusBoard[snapshot.pending_property!].rent)}
+                  </strong>
+                </span>
+              </div>
+
               {mine && (
                 <div className="action-row">
                   <button
@@ -134,11 +161,11 @@ export function CampusTurnControls({
                   </button>
                 </div>
               )}
-            </>
+            </div>
           )}
           {snapshot.phase === "airport" && (
             <div className="airport-instruction">
-              <span>✈️</span>
+              <CampusIcon kind="airport" />
               <h2>Choose your destination</h2>
               <p>
                 {mine
@@ -201,16 +228,29 @@ export function CampusTurnControls({
         busy={disabled}
         onAction={onAction}
       />
+      {!!snapshot.trades?.filter((t) => t.recipient === me.id).length && (
+        <button className="incoming-trade-preview" onClick={onTrade}>
+          Offer from{" "}
+          {
+            snapshot.players.find(
+              (p) =>
+                p.id ===
+                snapshot.trades!.find((t) => t.recipient === me.id)!.sender,
+            )?.name
+          }
+          <span>Review trade →</span>
+        </button>
+      )}
       <div className="center-tools">
         <button className="secondary" onClick={onManage}>
-          🏗️ Property manager
+          <CampusIcon category="housing" /> Property manager
         </button>
         <button
           className="secondary"
           disabled={disabled || me.bankrupt || snapshot.phase === "auction"}
           onClick={onTrade}
         >
-          🤝 Trade{" "}
+          <CampusIcon category="social" /> Trade{" "}
           {snapshot.trades?.filter((t) => t.recipient === me.id).length
             ? `(${snapshot.trades.filter((t) => t.recipient === me.id).length})`
             : ""}

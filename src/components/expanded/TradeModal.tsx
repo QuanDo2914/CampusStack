@@ -1,3 +1,4 @@
+import { CampusIcon } from "../tabletop/CampusIcon";
 import { useState } from "react";
 import { campusBoard, owned, character } from "../../lib/expanded";
 import { money } from "../../lib/board";
@@ -158,7 +159,12 @@ export function TradeModal({
                     checked={col.values.includes(b.index)}
                     onChange={() => toggle(b.index, col.values, col.setter)}
                   />
-                  {b.icon} {b.name}
+                  <CampusIcon
+                    kind={b.kind}
+                    category={b.category}
+                    name={b.name}
+                  />
+                  {b.name}
                   {snapshot.assets?.[b.index].mortgaged ? " Ⓜ" : ""}
                 </label>
               ))}

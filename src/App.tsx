@@ -18,7 +18,13 @@ export default function App() {
   const [testSetup, setTestSetup] = useState(false);
   const [rules, setRules] = useState(false);
   return (
-    <main>
+    <main
+      className={
+        game.snapshot?.status === "active" && game.snapshot.rules_version === 2
+          ? "tabletop-app"
+          : ""
+      }
+    >
       <header className="app-header">
         <a className="brand" href="/" aria-label="CampusStack home">
           <span className="brand-mark">

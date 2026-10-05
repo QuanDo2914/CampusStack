@@ -11,10 +11,14 @@ export function GameLog({ events }: { events: GameEvent[] }) {
             ? "reward"
             : "normal";
   return (
-    <section className="campus-log">
-      <h2>
-        Campus chronicle <span>Live</span>
-      </h2>
+    <details className="campus-log tabletop-history">
+      <summary>
+        <span className="history-live">LIVE</span>
+        <span role="status">
+          {events.at(-1)?.message || "Welcome to the campus."}
+        </span>
+        <strong>History ↗</strong>
+      </summary>
       <ol aria-live="polite">
         {events
           .slice(-20)
@@ -34,6 +38,6 @@ export function GameLog({ events }: { events: GameEvent[] }) {
             </li>
           ))}
       </ol>
-    </section>
+    </details>
   );
 }

@@ -171,3 +171,24 @@ test("mortgaged property shows zero current rent and all four victory types rend
       /Quan.*wins/,
     );
 });
+
+test("tabletop preserves full accessible tile names, shared occupants, mortgages and Landmark development", () => {
+  const html = render({
+    ...base,
+    assets: {
+      1: { owner: "p1", level: 5, mortgaged: false },
+      2: { owner: "p1", level: 0, mortgaged: true },
+    },
+    players: players.map((p) => ({ ...p, position: 1 })),
+  });
+  assert.match(html, /Engineering Cafe, owned by Quan/);
+  assert.match(html, /Green Street Pizza, owned by Quan, mortgaged/);
+  assert.match(html, /Quan at Engineering Cafe/);
+  assert.match(html, /Alex at Engineering Cafe/);
+  assert.match(html, /5 development levels/);
+  assert.equal((html.match(/data-testid="space-/g) || []).length, 40);
+  assert.ok(
+    !html.includes("board-character"),
+    "board tokens use original vector pieces",
+  );
+});

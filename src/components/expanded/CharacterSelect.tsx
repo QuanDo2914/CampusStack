@@ -1,3 +1,4 @@
+import { PlayerToken } from "../tabletop/PlayerToken";
 import { characters } from "../../lib/expanded";
 import type { Act, Snapshot } from "../../types/game";
 export function CharacterSelect({
@@ -26,7 +27,13 @@ export function CharacterSelect({
               aria-pressed={owner?.id === playerId}
               onClick={() => onAction("character", { character: c.id })}
             >
-              <span>{c.icon}</span>
+              <PlayerToken
+                player={{
+                  ...(owner ||
+                    snapshot.players.find((p) => p.id === playerId)!),
+                  character: c.id,
+                }}
+              />
               <strong>{c.name}</strong>
               <small>{owner?.name || "Available"}</small>
             </button>

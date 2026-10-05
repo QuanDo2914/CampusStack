@@ -12,3 +12,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 import "./expanded.css";
+
+import "./tabletop.css";

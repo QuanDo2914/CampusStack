@@ -1,3 +1,4 @@
+import { PlayerToken } from "./tabletop/PlayerToken";
 import { CharacterSelect } from "./expanded/CharacterSelect";
 import { character } from "../lib/expanded";
 import { useState } from "react";
@@ -51,10 +52,15 @@ export function LobbyScreen({
             <div className={`lobby-seat ${p ? "" : "empty"}`} key={seat}>
               {p ? (
                 <>
-                  <span className="avatar" style={{ background: colors[seat] }}>
-                    {snapshot.rules_version === 2
-                      ? character(p).icon
-                      : p.name[0].toUpperCase()}
+                  <span
+                    className={`avatar ${snapshot.rules_version === 2 ? "lobby-piece" : ""}`}
+                    style={{ background: colors[seat] }}
+                  >
+                    {snapshot.rules_version === 2 ? (
+                      <PlayerToken player={p} />
+                    ) : (
+                      p.name[0].toUpperCase()
+                    )}
                   </span>
                   <strong>{p.name}</strong>
                   <span className="muted">

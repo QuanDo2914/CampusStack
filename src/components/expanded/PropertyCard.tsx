@@ -7,6 +7,7 @@ import {
 } from "../../lib/expanded";
 import { money } from "../../lib/board";
 import type { Snapshot } from "../../types/game";
+import { CampusIcon } from "../tabletop/CampusIcon";
 import { Modal } from "./Modal";
 export function PropertyCard({
   index,
@@ -36,7 +37,9 @@ export function PropertyCard({
     };
     return (
       <Modal title={b.name} onClose={onClose}>
-        <div className="property-art">{b.icon}</div>
+        <div className="property-art">
+          <CampusIcon kind={b.kind} category={b.category} name={b.name} />
+        </div>
         <p>{explanations[b.kind]}</p>
         <p className="fine-print">This space cannot be purchased.</p>
       </Modal>
@@ -51,7 +54,7 @@ export function PropertyCard({
             groups.find((g) => g.id === b.category)?.color || "#dae7e5",
         }}
       >
-        {b.icon}
+        <CampusIcon kind={b.kind} category={b.category} name={b.name} />
       </div>
       <p>
         {groups.find((g) => g.id === b.category)?.name ||

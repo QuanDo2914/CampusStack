@@ -1,9 +1,5 @@
-import {
-  character,
-  owned,
-  completeGroups,
-  victoryLabels,
-} from "../../lib/expanded";
+import { PlayerToken } from "../tabletop/PlayerToken";
+import { owned, completeGroups, victoryLabels } from "../../lib/expanded";
 import { money } from "../../lib/board";
 import { CampusBoard } from "./Board";
 import type { Snapshot } from "../../types/game";
@@ -39,7 +35,9 @@ export function VictoryScreen({
           />
         ))}
       </div>
-      <span className="victory-character">{character(winner).icon}</span>
+      <span className="victory-character">
+        <PlayerToken player={winner} />
+      </span>
       <p className="eyebrow">The campus has a new legend</p>
       <h1>🏆 {winner.name} wins!</h1>
       <h2>{victoryLabels[snapshot.winner!.type]}</h2>
@@ -88,7 +86,7 @@ export function VictoryScreen({
           >
             <h2>{victoryLabels[snapshot.winner!.type]}</h2>
             <p>
-              {winner.name} · {character(winner).icon}
+              {winner.name} · <PlayerToken player={winner} />
             </p>
           </CampusBoard>
         </div>

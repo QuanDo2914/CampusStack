@@ -1,3 +1,4 @@
+import { CampusIcon } from "../tabletop/CampusIcon";
 import { useState } from "react";
 import type { Snapshot, Act } from "../../types/game";
 import { campusBoard, eligibleUpgrade } from "../../lib/expanded";
@@ -27,10 +28,17 @@ export function EventCard({
       className="campus-event-card"
       aria-label={`Event ${e.name}`}
     >
-      <span>{e.icon}</span>
+      <CampusIcon kind="event" />
       <div>
         <strong>{e.name}</strong>
         <p>{e.description}</p>
+        {snapshot.phase !== "event_choice" && (
+          <small className="event-resolution">
+            {snapshot.phase === "debt"
+              ? "Payment pending"
+              : "Applied to this turn"}
+          </small>
+        )}
       </div>
       {snapshot.phase === "event_choice" && mine && (
         <div className="event-options">

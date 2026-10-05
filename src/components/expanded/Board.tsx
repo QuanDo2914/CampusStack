@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  campusBoard,
-  character,
-  groups,
-  tilePosition,
-} from "../../lib/expanded";
-import { colors, money } from "../../lib/board";
+import { campusBoard } from "../../lib/expanded";
+import { BoardTile } from "../tabletop/BoardTile";
 import type { Snapshot } from "../../types/game";
 export function CampusBoard({
   snapshot,
@@ -31,6 +26,7 @@ export function CampusBoard({
       snapshot.players.map((p) => [p.id, p.position]),
     );
     if (
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
       old &&
       m &&
       JSON.stringify(old.movement) !== JSON.stringify(m) &&
@@ -61,79 +57,35 @@ export function CampusBoard({
   }, [snapshot.revision]);
   return (
     <div
-      className={`campus-board ${canTravel ? "choosing-destination" : ""}`}
-      aria-label="CampusStack square board"
+      className={`tabletop-scene ${canTravel ? "choosing-destination" : ""}`}
+      aria-label="CampusStack isometric tabletop board"
     >
-      {campusBoard.map((b) => {
-        const [col, row] = tilePosition(b.index);
-        const asset = snapshot.assets?.[b.index];
-        const owner = snapshot.players.find((p) => p.id === asset?.owner);
-        const won =
-          snapshot.winner?.type === "STRAIGHT_LINE" &&
-          snapshot.winner.side === b.side;
-        return (
-          <button
+      <div className="tabletop-plane campus-board">
+        <div className="campus-lawn" aria-hidden="true">
+          <div className="quad-path path-one" />
+          <div className="quad-path path-two" />
+          <div className="quad-fountain" />
+          <span className="quad-tree tree-one" />
+          <span className="quad-tree tree-two" />
+          <span className="quad-tree tree-three" />
+          <span className="quad-tree tree-four" />
+          <span className="lawn-label">THE CAMPUS QUAD</span>
+        </div>
+        {campusBoard.map((b) => (
+          <BoardTile
             key={b.index}
-            className={`campus-space ${b.index % 10 === 0 ? "corner" : ""} kind-${b.kind} ${snapshot.pending_property === b.index ? "offered" : ""} ${asset?.mortgaged ? "mortgaged" : ""} ${won ? "winning-side" : ""}`}
-            style={
-              {
-                gridColumn: col,
-                gridRow: row,
-                "--group":
-                  groups.find((g) => g.id === b.category)?.color || "#789993",
-                "--owner": owner ? colors[owner.seat] : "transparent",
-              } as React.CSSProperties
-            }
-            onClick={() =>
-              canTravel && b.index !== 10
-                ? onDestination(b.index)
-                : onInspect(b.index)
-            }
-            aria-label={`${b.name}${owner ? `, owned by ${owner.name}` : ""}${canTravel && b.index !== 10 ? ", fly here" : ""}`}
-            data-testid={`space-${b.index}`}
-          >
-            <span className="space-icon">{b.icon}</span>
-            <strong>{b.name}</strong>
-            <small>
-              {b.kind === "start"
-                ? "+$100"
-                : asset?.mortgaged
-                  ? "MORTGAGED"
-                  : asset?.level
-                    ? `${asset.level} ▰`
-                    : b.price
-                      ? money(b.price)
-                      : b.kind === "fee"
-                        ? `−${money(b.fee)}`
-                        : b.kind === "airport"
-                          ? "Choose destination"
-                          : b.kind === "jail"
-                            ? "Visiting / inside"
-                            : ""}
-            </small>
-            <div className="campus-tokens">
-              {snapshot.players
-                .filter(
-                  (p) =>
-                    !p.bankrupt && (positions[p.id] ?? p.position) === b.index,
-                )
-                .map((p) => (
-                  <span
-                    key={p.id}
-                    className={`board-character ${p.jailed ? "inside-jail" : ""}`}
-                    style={{ borderColor: colors[p.seat] }}
-                    title={`${p.name}${p.jailed ? " · jailed" : ""}`}
-                    aria-label={`${p.name} at ${b.name}`}
-                  >
-                    {character(p).icon}
-                  </span>
-                ))}
-            </div>
-            {owner && <i className="ownership-strip" title={owner.name} />}
-          </button>
-        );
-      })}
-      <section className="campus-center">{children}</section>
+            index={b.index}
+            snapshot={snapshot}
+            occupants={snapshot.players.filter(
+              (p) => !p.bankrupt && (positions[p.id] ?? p.position) === b.index,
+            )}
+            onInspect={onInspect}
+            onDestination={onDestination}
+            canTravel={canTravel}
+          />
+        ))}
+      </div>
+      <section className="campus-center tabletop-stage">{children}</section>
     </div>
   );
 }
