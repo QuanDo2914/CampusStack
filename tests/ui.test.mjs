@@ -204,3 +204,15 @@ test("tabletop preserves full accessible tile names, shared occupants, mortgages
     "board tokens use original vector pieces",
   );
 });
+
+
+test("diamond presentation keeps the authoritative tile indices and development levels with one dice stage", () => {
+  const html = render({...base, dice:[4,2], assets:{16:{owner:"p1",level:3,mortgaged:false}}});
+  assert.equal((html.match(/isometric-tile/g)||[]).length,40);
+  assert.equal((html.match(/physical-dice/g)||[]).length,1);
+  assert.match(html,/miniature-level-3/);
+  assert.match(html,/Student Apartments, owned by Quan/);
+  assert.match(html,/tabletop-side-dock/);
+  assert.match(html,/Roll Dice/);
+  assert.ok(!html.includes("tabletop-plane campus-board"));
+});

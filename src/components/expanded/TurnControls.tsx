@@ -15,6 +15,7 @@ export function CampusTurnControls({
   onAction,
   onManage,
   onTrade,
+  diceInQuad = false,
 }: {
   snapshot: Snapshot;
   session: Session;
@@ -24,6 +25,7 @@ export function CampusTurnControls({
   onAction: Act;
   onManage: () => void;
   onTrade: () => void;
+  diceInQuad?: boolean;
 }) {
   const p = snapshot.players.find((p) => p.id === snapshot.current_player_id)!;
   const me = snapshot.players.find((p) => p.id === session.player_id)!;
@@ -52,7 +54,7 @@ export function CampusTurnControls({
               {seconds}s
             </span>
           </div>
-          {(snapshot.phase === "awaiting_roll" ||
+          {!diceInQuad && (snapshot.phase === "awaiting_roll" ||
             snapshot.phase === "management") && (
             <Dice
               values={snapshot.dice}

@@ -1,3 +1,6 @@
+import { diamondFacePath } from "./diamondGeometry";
+import { CornerMonument } from "./CornerMonument";
+import { MiniatureBuilding } from "./MiniatureBuilding";
 import { TileLabel } from "./TileLabel";
 import { tileDisplayNames } from "./displayNames";
 import { CornerTile } from "./CornerTile";
@@ -13,6 +16,7 @@ export function BoardTile({
   onInspect,
   onDestination,
   canTravel,
+  diamond = false,
 }: {
   index: number;
   snapshot: Snapshot;
@@ -20,6 +24,7 @@ export function BoardTile({
   onInspect: (i: number) => void;
   onDestination: (i: number) => void;
   canTravel: boolean;
+  diamond?: boolean;
 }) {
   const b = campusBoard[index],
     [col, row] = tilePosition(index),
@@ -50,6 +55,7 @@ export function BoardTile({
                 : b.kind === "parking"
                   ? "Rest"
                   : "";
+  const tileFace = diamondFacePath(index, edge);
   const emblem = (
     <CampusIcon kind={b.kind} category={b.category} name={b.name} />
   );
@@ -57,11 +63,16 @@ export function BoardTile({
     <button
       data-testid={`space-${index}`}
       data-edge={edge}
-      className={`campus-space tabletop-tile kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${owner ? "owned" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
+      data-corner={index % 10 === 0 ? index : undefined}
+      data-corner-distance={Math.min(index % 10, 10 - index % 10)}
+      className={`campus-space tabletop-tile ${diamond ? "isometric-tile" : ""} kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${owner ? "owned" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
       style={
         {
           gridColumn: col,
           gridRow: row,
+          ...(diamond ? { left: `${50 + (col-row)*50/11}%`, top: `${(col+row-1)*50/11}%` } : {}),
+          "--corner-distance": Math.min(index % 10, 10 - index % 10),
+          "--corner-shift": index % 10 <= 2 ? (3 - index % 10) * 27 : index % 10 >= 8 ? -(index % 10 - 7) * 27 : 0,
           "--group":
             groups.find((g) => g.id === b.category)?.color || "#679587",
           "--owner": owner ? colors[owner.seat] : "transparent",
@@ -73,6 +84,8 @@ export function BoardTile({
       aria-label={`${b.name}${owner ? `, owned by ${owner.name}` : ""}${a?.mortgaged ? ", mortgaged" : ""}${canTravel && index !== 10 ? ", fly here" : ""}`}
       title={b.name}
     >
+      {diamond && <svg className="diamond-tile-face" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path className="tile-rim" d={tileFace}/><path className="district-edge" d="M5 50 50 5 95 50"/><path className="owner-edge" d="M5 52 50 97 95 52"/></svg>}
+      {diamond && index % 10 === 0 && <CornerMonument index={index}/> }
       {index % 10 === 0 ? (
         <CornerTile
           emblem={emblem}
@@ -106,17 +119,7 @@ export function BoardTile({
           className={`tile-buildings ${a.level === 5 ? "landmark" : ""}`}
           aria-label={`${a.level} development levels`}
         >
-          {a.level === 5 ? (
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M2 19V8h5V3l3-3 3 3v5h5v11ZM8 7h4M8 11h4M8 15h4" />
-            </svg>
-          ) : (
-            Array.from({ length: a.level }, (_, i) => (
-              <svg key={i} viewBox="0 0 16 16" aria-hidden="true">
-                <path d="m1 7 7-6 7 6v8H2V7Zm5 8V9h4v6" />
-              </svg>
-            ))
-          )}
+          <MiniatureBuilding level={a.level} color={groups.find(g => g.id === b.category)?.color || "#739c7d"} />
         </span>
       )}
       <span className="campus-tokens">

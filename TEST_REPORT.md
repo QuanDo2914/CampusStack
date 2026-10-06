@@ -133,3 +133,33 @@ complex dialogs scroll within their own panels. No main merge or production depl
 - All 63 Node tests pass; TypeScript/production build pass. Production JavaScript
   contains no tile-lab fixture/UI strings. Presentation changes only; no engine,
   authoritative board data, Supabase/RPC or bot changes. No merge or deployment.
+
+## Isometric diamond camera and toy miniatures
+
+- Replaced the mildly tilted rectangular plane with a projected equal-sided
+  square: 45° rotation, a 2:1 diamond silhouette, SVG slab sides and ground shadow.
+  Logical space order, movement, assets and action validation remain unchanged.
+- Preserved open tabletop margins and a large quad; moved turn actions into a
+  separate right dock with a compact expandable rail. Only one physical dice
+  stage renders. Complex dock panels scroll independently of the board.
+- Original SVG toys have shaded roofs/walls, plinths, windows, annexes and Landmark
+  flags. Corner-aware footprints/anchors and four original corner monuments keep
+  names, prices and primary icons readable. Ownership uses colored tile rims.
+- Tile lab now audits cross-tile text/icon collisions and oriented rectangles against actual piece paint
+  bounds, miniature/monument bounds and mortgage locks. One/four-piece fixtures
+  and an explicit Recheck action are available. At exact 1366×768, 1440×900,
+  1536×864 and 1920×1080: 40 tiles, 160 pieces, zero overflow/collision failures.
+- Added a DEV-only read-only full scene preview at `/__dev/tabletop` to review
+  four-player rails and several upgrade levels without touching a room/session.
+  Screenshot fixtures are labeled read-only; they are not multiplayer state.
+- All 64 Node tests pass and TypeScript/production build pass. Production JS
+  contains no visual fixture/UI strings. Browser deed inspection opens the
+  correct full Observatory name through the projected hit target.
+- Scope is presentation/components/dev fixtures/tests/docs only. No Supabase,
+  engine, authoritative board data, room/session or bot changes. No main merge
+  or production deployment. Portrait mobile remains outside this desktop pass.
+
+Surface polygons paint below all labels and hit targets, so neighboring faces
+cannot hide final letters. Property print follows the other projected square
+axis, retaining a readable icon/text grid and separating adjacent name lanes.
+The final audit includes text/price/icon-to-text collisions as well as markers.

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { campusBoard } from "../../lib/expanded";
+import { DiamondSurface } from "../tabletop/DiamondSurface";
+import { DiamondScenery } from "../tabletop/DiamondScenery";
+import { Dice } from "./Dice";
 import { BoardTile } from "../tabletop/BoardTile";
 import type { Snapshot } from "../../types/game";
 export function CampusBoard({
@@ -10,7 +13,7 @@ export function CampusBoard({
   canTravel,
 }: {
   snapshot: Snapshot;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onInspect: (index: number) => void;
   onDestination: (index: number) => void;
   canTravel: boolean;
@@ -57,28 +60,17 @@ export function CampusBoard({
   }, [snapshot.revision]);
   return (
     <div
-      className={`tabletop-scene ${canTravel ? "choosing-destination" : ""}`}
+      className={`tabletop-scene diamond-scene ${canTravel ? "choosing-destination" : ""}`}
       aria-label="CampusStack isometric tabletop board"
     >
-      <div className="tabletop-plane campus-board">
-        <div className="campus-lawn" aria-hidden="true">
-          <div className="quad-path path-one" />
-          <div className="quad-path path-two" />
-          <div className="quad-fountain" />
-          <span className="quad-tree tree-one" />
-          <span className="quad-tree tree-two" />
-          <span className="quad-tree tree-three" />
-          <span className="quad-tree tree-four" />
-          <span className="quad-shrub shrub-one" />
-          <span className="quad-shrub shrub-two" />
-          <span className="quad-bench bench-one" />
-          <span className="quad-bench bench-two" />
-          <span className="lawn-label">THE CAMPUS QUAD</span>
-        </div>
+      <div className="diamond-board">
+        <DiamondScenery />
+        <DiamondSurface snapshot={snapshot}/>
         {campusBoard.map((b) => (
           <BoardTile
             key={b.index}
             index={b.index}
+            diamond
             snapshot={snapshot}
             occupants={snapshot.players.filter(
               (p) => !p.bankrupt && (positions[p.id] ?? p.position) === b.index,
@@ -89,7 +81,8 @@ export function CampusBoard({
           />
         ))}
       </div>
-      <section className="campus-center tabletop-stage">{children}</section>
+      <div className="diamond-dice"><Dice values={snapshot.dice} busy={false} rollKey={snapshot.events.filter(e => e.message.includes(" rolled ")).at(-1)?.sequence} /></div>
+      {children && <section className="campus-center tabletop-stage">{children}</section>}
     </div>
   );
 }

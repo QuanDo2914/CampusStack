@@ -9,11 +9,13 @@ export function CampusPlayerPanel({
   playerId,
   onInspect,
   now,
+  collapsedByDefault = false,
 }: {
   snapshot: Snapshot;
   playerId: string;
   onInspect: (i: number) => void;
   now: number;
+  collapsedByDefault?: boolean;
 }) {
   const [expanded, setExpanded] = useState<string | null>(null),
     [deltas, setDeltas] = useState<Record<string, number>>({}),
@@ -50,7 +52,7 @@ export function CampusPlayerPanel({
         const mine = owned(snapshot, p.id),
           sets = completeGroups(snapshot, p.id),
           current = p.id === snapshot.current_player_id,
-          open = expanded === p.id || (expanded === null && current);
+          open = expanded === p.id || (expanded === null && current && !collapsedByDefault);
         return (
           <article
             key={p.id}

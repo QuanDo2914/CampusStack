@@ -222,3 +222,25 @@ price remains 9px on its own line. Board-only display labels live in
 `src/components/tabletop/displayNames.ts`; authoritative names remain unchanged
 in board data, accessible tile names and deeds. The audit module is omitted from
 production JavaScript.
+
+### Isometric diamond presentation
+
+The current desktop camera uses a square rotated 45° and projected to a 2:1
+screen-space diamond. SVG slab faces provide real geometric thickness and a
+contact shadow. Logical `tilePosition` indices still drive every tile and moving
+piece; the camera changes presentation only. Native labels rotate along each
+edge without horizontal scaling or perspective compression.
+
+The lawn stays open around the physical dice. Turn actions live in a separate
+right dock above the compact, expandable player rail. Complex action/details
+panels can scroll independently while the full board remains visible. Ownership
+uses colored tile rims; original SVG toy miniatures have shaded walls, roofs,
+plinths, annexes and Landmark flags. Their size/depth adapts near corners to keep
+labels clear. Four original corner monuments share the same projected roof style.
+
+`/__dev/tiles` now exercises this camera and uses oriented collision geometry for
+rotated labels. It includes a Recheck layout button and one/four-piece fixtures.
+`/__dev/tabletop` provides a read-only full-scene preview with four players and
+several development levels. Both routes are DEV-only, make no room/server
+requests, and are excluded from production JavaScript. To play normally with
+bots, return to `/` on the `npm run dev:bots` server.

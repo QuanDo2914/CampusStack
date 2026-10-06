@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { DiamondSurface } from "../components/tabletop/DiamondSurface";
+import { DiamondScenery } from "../components/tabletop/DiamondScenery";
 import { BoardTile } from "../components/tabletop/BoardTile";
 import { campusBoard } from "../lib/expanded";
 import type { Player, Snapshot } from "../types/game";
@@ -14,7 +16,7 @@ const players: Player[] = ["runner", "cyclist", "engineer", "robot"].map(
     last_seen_at: new Date().toISOString(),
   }),
 );
-const snapshot: Snapshot = {
+export const tileFixture: Snapshot = {
   rules_version: 2,
   room_session_id: "visual-fixture",
   status: "active",
@@ -43,56 +45,57 @@ const snapshot: Snapshot = {
   ),
 };
 
-const intersects = (a: DOMRect, b: DOMRect) =>
-  a.left < b.right - 1 &&
-  a.right > b.left + 1 &&
-  a.top < b.bottom - 1 &&
-  a.bottom > b.top + 1;
-// Read-only geometry audit: no engine, session or server access.
+type Point = { x: number; y: number };
+// Recover oriented rectangles from rotated DOM bounds. Axis-aligned bounds
+// over-report collisions between neighboring diagonal labels.
+function polygon(rect: DOMRect, angle = 0): Point[] {
+  const c = Math.cos(angle), s = Math.sin(angle), ac = Math.abs(c), as = Math.abs(s);
+  const determinant = ac * ac - as * as;
+  const w = (ac * rect.width - as * rect.height) / determinant;
+  const h = (ac * rect.height - as * rect.width) / determinant;
+  const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
+  return [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]].map(([u,v]) => ({x:x+u*c-v*s,y:y+u*s+v*c}));
+}
+function intersects(a: Point[], b: Point[]): boolean {
+  return ![a,b].some(p => p.some((point,i) => {
+    const next = p[(i+1)%p.length], axis = {x:-(next.y-point.y),y:next.x-point.x};
+    const project = (q: Point[]) => q.map(v => v.x*axis.x+v.y*axis.y);
+    const aa = project(a), bb = project(b), tolerance = Math.hypot(axis.x,axis.y);
+    return Math.max(...aa) <= Math.min(...bb)+tolerance || Math.max(...bb) <= Math.min(...aa)+tolerance;
+  }));
+}
 export function auditTiles(root: HTMLElement): string[] {
   const failures: string[] = [];
   const tiles = [...root.querySelectorAll<HTMLElement>(".tabletop-tile")];
-  const zones = tiles.flatMap((tile) =>
-    [
-      ...tile.querySelectorAll<HTMLElement>(
-        ".tile-title,.tile-copy small,.tile-emblem,.corner-emblem",
-      ),
-    ].map((e) => e.getBoundingClientRect()),
-  );
-  tiles.forEach((tile) => {
-    const name = tile.getAttribute("title")!;
-    const title = tile.querySelector<HTMLElement>(".tile-title")!;
-    const copy = tile.querySelector<HTMLElement>(".tile-copy")!;
-    const icon = tile.querySelector<HTMLElement>(
-      ".tile-emblem,.corner-emblem",
-    )!;
-    const range = document.createRange();
-    range.selectNodeContents(title);
-    const text = range.getBoundingClientRect();
-    const box = copy.getBoundingClientRect();
-    if (title.scrollWidth > title.clientWidth + 1 || text.width > box.width + 2)
-      failures.push(`${name}: title too wide`);
-    if (
-      title.clientHeight >
-      parseFloat(getComputedStyle(title).lineHeight) * 2 + 1
-    )
-      failures.push(`${name}: more than two title lines`);
-    const price = copy.querySelector("small");
-    if (price && price.scrollWidth > price.clientWidth + 1)
-      failures.push(`${name}: subtitle overflow`);
-    if (copy.scrollHeight > tile.clientHeight - 2 + 1)
-      failures.push(`${name}: content too tall`);
-    if (intersects(text, icon.getBoundingClientRect()))
-      failures.push(`${name}: icon/title overlap`);
-    tile
-      .querySelectorAll<HTMLElement>(
-        ".piece-position,.tile-buildings,.tile-owner-marker,.mortgage-lock",
-      )
-      .forEach((marker) => {
-        if (zones.some((z) => intersects(z, marker.getBoundingClientRect())))
-          failures.push(`${name}: marker/content overlap`);
-      });
+  const zones: Point[][] = [];
+  const zoneNames: string[] = [];
+  const zoneOwners: string[] = [];
+  const textZones = (element: HTMLElement, angle: number) => {
+    const range = document.createRange(); range.selectNodeContents(element);
+    return [...range.getClientRects()].map(r => polygon(r,angle));
+  };
+  tiles.forEach(tile => {
+    const name = tile.title, title = tile.querySelector<HTMLElement>(".tile-title")!, copy = tile.querySelector<HTMLElement>(".tile-copy")!;
+    const face = tile.querySelector<HTMLElement>(".tile-face,.corner-face")!;
+    const matrix = new DOMMatrix(getComputedStyle(face).transform);
+    const angle = Math.atan2(matrix.b,matrix.a);
+    const icon = tile.querySelector<HTMLElement>(".tile-emblem,.corner-emblem")!;
+    const text = textZones(title,angle), emblem = polygon(icon.getBoundingClientRect(),angle);
+    zones.push(...text,emblem); zoneOwners.push(...text.map(() => name),name); zoneNames.push(...text.map(() => name + " title"),name + " icon");
+    if (title.scrollWidth > title.clientWidth+1) failures.push(`${name}: title too wide`);
+    if (title.clientHeight > parseFloat(getComputedStyle(title).lineHeight)*2+1) failures.push(`${name}: more than two title lines`);
+    const price = copy.querySelector<HTMLElement>("small");
+    if (price) { const prices = textZones(price,angle); zones.push(...prices); zoneOwners.push(...prices.map(() => name)); zoneNames.push(...prices.map(() => name + " price")); if (price.scrollWidth > price.clientWidth+1) failures.push(`${name}: subtitle overflow`); }
+    if (text.some(p => intersects(p,emblem))) failures.push(`${name}: icon/title overlap`);
   });
+  zones.forEach((a,i) => zones.slice(i+1).forEach((b,k) => {
+    const j = i+k+1;
+    if (zoneOwners[i] !== zoneOwners[j] && intersects(a,b)) failures.push(`${zoneNames[i]} / ${zoneNames[j]}: cross-tile content overlap`);
+  }));
+  tiles.forEach(tile => tile.querySelectorAll<HTMLElement>(".piece-position .tabletop-token,.tile-buildings,.corner-monument,.tile-owner-marker,.mortgage-lock").forEach(marker => {
+    const collision = zones.findIndex(z => intersects(z,polygon(marker.getBoundingClientRect())));
+    if (collision >= 0) failures.push(`${tile.title}: marker/content overlap (${marker.getAttribute("class")} / ${zoneNames[collision]})`);
+  }));
   return failures;
 }
 export default function TileLab() {
@@ -108,6 +111,7 @@ export default function TileLab() {
     };
     const observer = new ResizeObserver(check);
     observer.observe(element);
+    element.querySelectorAll(".tile-face").forEach(e => observer.observe(e));
     const mutations = new MutationObserver(check);
     mutations.observe(element, {
       subtree: true,
@@ -137,6 +141,7 @@ export default function TileLab() {
         Development only · no server/session access
       </div>
       <div className="tile-lab-tools">
+        <button onClick={() => setFailures(auditTiles(root.current!))}>Recheck layout</button>
         <label>
           <input
             type="checkbox"
@@ -151,14 +156,16 @@ export default function TileLab() {
       </div>
       <div className="expanded-layout">
         <div className="board-scroll">
-          <div ref={root} className="tabletop-scene">
-            <div className="tabletop-plane campus-board">
-              <div className="campus-lawn" />
+          <div ref={root} className="tabletop-scene diamond-scene">
+            <div className="diamond-board">
+              <DiamondScenery />
+              <DiamondSurface snapshot={tileFixture}/>
               {campusBoard.map((b) => (
                 <BoardTile
                   key={b.index}
                   index={b.index}
-                  snapshot={snapshot}
+                  diamond
+                  snapshot={tileFixture}
                   occupants={stacked ? players : [players[b.index % 4]]}
                   onInspect={() => {}}
                   onDestination={() => {}}
@@ -166,18 +173,7 @@ export default function TileLab() {
                 />
               ))}
             </div>
-            <section className="tabletop-stage campus-center">
-              <h2>All 40 spaces</h2>
-              <p>
-                Every space has a piece. Toggle four-piece stacks to test the
-                edge anchors.
-              </p>
-              <strong>
-                {failures.length
-                  ? `${failures.length} layout issues`
-                  : "All tile checks pass"}
-              </strong>
-            </section>
+
           </div>
         </div>
         <aside className="tile-lab-report" data-pass={!failures.length}>

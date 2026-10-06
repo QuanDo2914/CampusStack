@@ -69,10 +69,15 @@ export function ExpandedGame({
                 !busy &&
                 connected
               }
-            >
-              <div className="desktop-center-content">
+            />
+          </div>
+          <GameLog events={snapshot.events} />
+        </div>
+        <div className="tabletop-side-dock">
+          <section className="campus-center tabletop-stage iso-action-stage">              <div className="desktop-center-content">
                 <span className="stage-eyebrow">MEET IN THE QUAD</span>
                 <CampusTurnControls
+                  diceInQuad
                   snapshot={snapshot}
                   session={session}
                   busy={busy}
@@ -83,16 +88,15 @@ export function ExpandedGame({
                   onTrade={() => setTrade(true)}
                 />
               </div>
-            </CampusBoard>
-          </div>
-          <GameLog events={snapshot.events} />
-        </div>
+          </section>
         <CampusPlayerPanel
+          collapsedByDefault
           snapshot={snapshot}
           playerId={me.id}
           onInspect={setInspect}
           now={Date.now() + offset}
         />
+        </div>
       </div>
       {inspect !== null && (
         <PropertyCard
