@@ -202,3 +202,8 @@ Ownership badges, mortgage locks, house/landmark markers and complete-set accent
 come from authoritative snapshot data. Dice/token/cash/event animations are purely
 visual and respect reduced-motion preferences. Detailed trades, deeds and property
 management remain accessible through the existing dialogs; game rules are unchanged.
+
+Corner artwork now uses a presentation-only `CornerTile` composition accepting an
+emblem, label and optional subtitle. Retheming those visual inputs does not alter
+board data or action handling. The compact score rail shows assets and turn status
+at a glance; expand a player to inspect sets, Transit, mortgages and achievements.

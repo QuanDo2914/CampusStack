@@ -27,11 +27,11 @@ export function GameLog({ events }: { events: GameEvent[] }) {
             <li key={e.sequence} className={`log-${kind(e.message)}`}>
               <span>
                 {kind(e.message) === "reward"
-                  ? "✨"
+                  ? "+"
                   : kind(e.message) === "danger"
-                    ? "⚠️"
+                    ? "!"
                     : kind(e.message) === "asset"
-                      ? "🏘️"
+                      ? "▰"
                       : "•"}
               </span>
               {e.message}

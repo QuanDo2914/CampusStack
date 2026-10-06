@@ -69,6 +69,10 @@ export function CampusBoard({
           <span className="quad-tree tree-two" />
           <span className="quad-tree tree-three" />
           <span className="quad-tree tree-four" />
+          <span className="quad-shrub shrub-one" />
+          <span className="quad-shrub shrub-two" />
+          <span className="quad-bench bench-one" />
+          <span className="quad-bench bench-two" />
           <span className="lawn-label">THE CAMPUS QUAD</span>
         </div>
         {campusBoard.map((b) => (

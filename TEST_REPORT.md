@@ -87,3 +87,27 @@ Desktop-first limitations: narrow widths retain desktop composition with scrolli
 phone-specific sheets/layouts are deferred. The 2.5D treatment uses restrained CSS
 perspective and layered shadows rather than a 3D engine. Long history, holdings and
 complex dialogs scroll within their own panels. No main merge or production deploy.
+
+## Focused desktop material polish
+
+- Presentation-only update: perimeter order/perspective retained, with an additional
+  approximately 7–8% board reduction and wider rail separation. The upright action
+  card is approximately 12–15% narrower, with quieter secondary controls.
+- Data-driven CornerTile accepts artwork, primary label and optional subtitle.
+  Airport uses the shared SVG emblem at a restrained size and “Fast Travel” copy.
+- Strengthened owner bands, physical piece bases, building/Landmark markers, mortgage
+  labels and district accents; separated score rail with always-visible asset/status
+  metadata and expanded mortgage information. Added restrained shrubs/benches,
+  material shadows, inset dice pips, doubles emphasis and a deliberate slim history bar.
+- Dice tumble starts from confirmed snapshot dice/roll events, rather than request
+  pending state. Existing confirmed movement/cash/building/event/auction/victory
+  animations remain; reduced-motion overrides apply to all new effects.
+- 63 Node tests pass, including corner copy/accessibility and compact player metadata.
+  TypeScript and production build pass. All four exact desktop viewports have all
+  40 tile bounds visible, no page overflow and clear normal-turn action controls.
+- Browser played roll/rent and purchase/auction flows. Smaller offer/auction panels
+  were compacted after an intermediate perimeter overlap was caught during review.
+  Screenshots delivered at 1366×768, 1440×900 and 1920×1080.
+- No rules, board data/order, Supabase schema/RPC, bot logic or victory evaluator
+  changes. No merge or production deployment. Dense event choices/dialogs retain
+  their existing scrolling behavior; portrait mobile remains out of scope.

@@ -9,7 +9,6 @@ const pips: Record<number, number[]> = {
 };
 export function Dice({
   values,
-  busy,
   rollKey,
 }: {
   values?: number[];
@@ -25,7 +24,7 @@ export function Dice({
   }, [values?.join(","), rollKey]);
   return (
     <div
-      className={`campus-dice physical-dice ${rolling || busy ? "rolling" : ""}`}
+      className={`campus-dice physical-dice ${rolling ? "rolling" : ""} ${values && values[0] === values[1] ? "is-doubles" : ""}`}
       aria-label={
         values ? `Dice ${values.join(" and ")}` : "Two six-sided dice"
       }

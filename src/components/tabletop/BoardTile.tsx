@@ -1,3 +1,4 @@
+import { CornerTile } from "./CornerTile";
 import { CampusIcon } from "./CampusIcon";
 import { PlayerToken } from "./PlayerToken";
 import { campusBoard, groups, tilePosition } from "../../lib/expanded";
@@ -70,10 +71,32 @@ export function BoardTile({
     campusBoard
       .filter((x) => x.category === b.category)
       .every((x) => snapshot.assets?.[x.index]?.owner === owner.id);
+  const subtitle = a?.mortgaged
+    ? "Mortgaged"
+    : b.price
+      ? money(b.price)
+      : b.kind === "start"
+        ? "+$100"
+        : b.kind === "fee"
+          ? `−${money(b.fee)}`
+          : b.kind === "event"
+            ? "Draw card"
+            : b.kind === "airport"
+              ? "Fast Travel"
+              : b.kind === "jail"
+                ? "Just visiting"
+                : b.kind === "go_to_jail"
+                  ? "Campus security"
+                  : b.kind === "parking"
+                    ? "Take a break"
+                    : "";
+  const emblem = (
+    <CampusIcon kind={b.kind} category={b.category} name={b.name} />
+  );
   return (
     <button
       data-testid={`space-${index}`}
-      className={`campus-space tabletop-tile kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
+      className={`campus-space tabletop-tile kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${owner ? "owned" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
       style={
         {
           gridColumn: col,
@@ -89,27 +112,21 @@ export function BoardTile({
       aria-label={`${b.name}${owner ? `, owned by ${owner.name}` : ""}${a?.mortgaged ? ", mortgaged" : ""}${canTravel && index !== 10 ? ", fly here" : ""}`}
       title={b.name}
     >
-      <CampusIcon kind={b.kind} category={b.category} name={b.name} />
-      <span className="tile-copy">
-        <strong>{shortNames[index]}</strong>
-        <small>
-          {a?.mortgaged
-            ? "LOCKED"
-            : b.price
-              ? money(b.price)
-              : b.kind === "start"
-                ? "+$100"
-                : b.kind === "fee"
-                  ? `−${money(b.fee)}`
-                  : b.kind === "event"
-                    ? "DRAW"
-                    : b.kind === "airport"
-                      ? "FLY ANYWHERE"
-                      : b.kind === "jail"
-                        ? "VISITING / INSIDE"
-                        : ""}
-        </small>
-      </span>
+      {index % 10 === 0 ? (
+        <CornerTile
+          emblem={emblem}
+          label={shortNames[index]}
+          subtitle={subtitle}
+        />
+      ) : (
+        <>
+          {emblem}
+          <span className="tile-copy">
+            <strong>{shortNames[index]}</strong>
+            {subtitle && <small>{subtitle}</small>}
+          </span>
+        </>
+      )}
       {owner && (
         <span className="tile-owner" title={`Owned by ${owner.name}`}>
           <span>
@@ -125,6 +142,7 @@ export function BoardTile({
       )}
       {!!a?.level && (
         <span
+          key={a.level}
           className={`tile-buildings ${a.level === 5 ? "landmark" : ""}`}
           aria-label={`${a.level} development levels`}
         >

@@ -186,6 +186,11 @@ test("tabletop preserves full accessible tile names, shared occupants, mortgages
   assert.match(html, /Quan at Engineering Cafe/);
   assert.match(html, /Alex at Engineering Cafe/);
   assert.match(html, /5 development levels/);
+  assert.match(html, /corner-face/);
+  assert.match(html, /Fast Travel/);
+  assert.ok(!html.includes("FLY ANYWHERE"));
+  assert.match(html, /Mortgaged/);
+  assert.match(html, /rail-compact-meta/);
   assert.equal((html.match(/data-testid="space-/g) || []).length, 40);
   assert.ok(
     !html.includes("board-character"),

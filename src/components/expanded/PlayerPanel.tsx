@@ -77,6 +77,20 @@ export function CampusPlayerPanel({
                         : `${mine.length} assets · ${sets.length} sets`}
                 </span>
               </span>
+              <span className="rail-compact-meta">
+                <span>{mine.length} assets</span>
+                <span>
+                  {p.bankrupt
+                    ? "Spectating"
+                    : current
+                      ? p.id === playerId
+                        ? "Your turn"
+                        : "Playing"
+                      : p.jailed
+                        ? "In Jail"
+                        : "Waiting"}
+                </span>
+              </span>
               <b className="rail-cash">{money(p.cash)}</b>
             </button>
             {!!deltas[p.id] && (
@@ -103,6 +117,15 @@ export function CampusPlayerPanel({
                     Transit
                   </span>
                 </div>
+                {mine.some((b) => snapshot.assets?.[b.index].mortgaged) && (
+                  <p className="rail-mortgages">
+                    {
+                      mine.filter((b) => snapshot.assets?.[b.index].mortgaged)
+                        .length
+                    }{" "}
+                    mortgaged assets · rent paused
+                  </p>
+                )}
                 <div className="set-badges">
                   {sets.map((g) => (
                     <span key={g.id} style={{ background: g.color }}>
