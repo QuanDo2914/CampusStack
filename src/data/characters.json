@@ -1,0 +1,42 @@
+[
+  {
+    "id": "runner",
+    "name": "Runner",
+    "icon": "\ud83c\udfc3"
+  },
+  {
+    "id": "cyclist",
+    "name": "Cyclist",
+    "icon": "\ud83d\udeb4"
+  },
+  {
+    "id": "engineer",
+    "name": "Engineer",
+    "icon": "\ud83d\udc77"
+  },
+  {
+    "id": "robot",
+    "name": "Robot",
+    "icon": "\ud83e\udd16"
+  },
+  {
+    "id": "coffee",
+    "name": "Coffee",
+    "icon": "\u2615"
+  },
+  {
+    "id": "skater",
+    "name": "Skater",
+    "icon": "\ud83d\udef9"
+  },
+  {
+    "id": "laptop",
+    "name": "Coder",
+    "icon": "\ud83d\udcbb"
+  },
+  {
+    "id": "mascot",
+    "name": "Campus Fox",
+    "icon": "\ud83e\udd8a"
+  }
+]

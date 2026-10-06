@@ -1,46 +1,165 @@
-# CampusStack verification — October 2, 2026
+# Expanded CampusStack verification — October 4, 2026
 
-## Phase results
+## Automated
 
-| Phase | Implemented | Verification |
-|---|---|---|
-| 1 | React/Vite/TypeScript scaffold, create/join, persisted identity, lobby, realtime player list, host-only start, room-scoped snapshot access | Four database test groups passed; two browser storage identities joined the same room, both rosters updated, host start synchronized, guest refresh retained its seat. |
-| 2 | Original 20-space board, authoritative turns/die/movement, START payment, 30-second timeout | Movement, duplicate rolls, turn authorization, timeout idempotency and stale revisions passed. Deterministic SQL tests verified both exact START landing and crossing pay $100 once. |
-| 3 | Buy/skip, ownership, rent, cash, events, fees, event feed | Purchases cannot double-charge; insufficient cash and unauthorized purchases fail; mandatory payments allow negative cash; own-property landing charges nothing. Browser test observed Quan buy Bike Hub, Alex pay $25 rent, and both clients display $1,385/$1,475 balances. |
-| 4 | Server match deadline, client-triggered finish, frozen net worth leaderboard and ties | Early finish rejected as a state change; multiple finish requests produced one finalization event; expired rolls and purchases did not mutate gameplay. Browser countdown-to-results verified in a 12-second match configured only in the local test harness. Both sessions showed the same tied leaderboard. Normal SQL start remains 15 minutes. |
-| 5 | Responsive layouts, step animation, reduced-motion support, rules, reconnect attempts, saved seats, presence, validation, rate limits, deployment configuration | TypeScript and production build passed. Desktop and 390px/320px phone layouts inspected. A narrow grid overflow was fixed; final DOM page width equaled the 320px viewport. Rules modal worked on mobile; refresh preserved gameplay and identity. |
+- `npm test`: **48 passed, 0 failed**.
+- Includes original 20 legacy database/API tests and 25 expanded/compatibility tests and 3 frontend render tests.
+- Two dice, doubles/extra roll, third doubles Jail; exact START landing/crossing and Jail-release salary.
+- Purchases, automatic rent, stations/scaling, color sets, even upgrades/downgrades, mortgages/unmortgages.
+- All four exact victories, incomplete-side/set rejection, maximum-level empire requirement, finalized mutation rejection and one winner/event.
+- Airport destination effects, no free ownership/salary, invalid/self-loop destination rejection.
+- Auction bid/cash validation, timeout settlement once, auction victory.
+- Trade cash/ownership transfers, retry idempotency, counteroffers, stale assets/cash/mortgage-state rejection, trade victory.
+- Mandatory debt, mortgage recovery, payment, bankruptcy elimination/creditor asset transfer, bank asset return, timeout liquidation, last survivor.
+- All 30 event cards, interactive grants/gifts and one-use rent protection/bonus.
+- Migration of an already active legacy room; explicit expanded entry; old-client/version compatibility.
+- Existing RLS, entry capacity, signed room JWTs, ES256 import regression, safe error diagnostics and rate-limit tests preserved.
+- TypeScript checks via `npm run build`: passed. Production Vite build: passed.
+- Frontend renders an empty fresh board, all action phases, unique auction labels, correct zero mortgage rent, and all four victory screens.
+- No lint command/configuration is present.
 
-## Final automated checks
+Tests use PGlite, which serializes connections. Promise-based concurrent calls test deduplication outcomes; they do not prove native Postgres row-lock behavior. A dedicated empty native test database can be supplied through TEST_DATABASE_URL. Never use production for the destructive test bootstrap.
 
-- `npm test`: **19/19 test groups passed**, using the actual SQL migrations in PGlite and the actual Edge API handler.
-- `npm run build`: **passed** (TypeScript + Vite).
-- JWT tests: HS256 and imported ES256 signing passed, including a JWK without an explicit `alg` field.
-- RLS tests: no-claim enumeration returns zero rows; a room claim reads only its room; browser mutation and private table/function access denied.
-- Dependencies: installation audit reported zero known vulnerabilities at the time of implementation.
+## Browser verification
 
-## Browser evidence
+Real app and local PostgreSQL-backed transport, through Chrome's connected browser tools:
 
-The app’s in-app browser tools verified two independent localStorage identities using `localhost` and `127.0.0.1`:
+- Separate localhost and 127.0.0.1 origins for independent localStorage/session identities.
+- Quan created a room; Alex joined; robot selection synchronized; unique selected character unavailable to the other player.
+- Host started; both boards/current turn synchronized.
+- Rolled 4 + 4; mandatory $75 fee; extra roll 3 + 6; purchased Study Commons for $200. Both clients displayed ownership and $1,225 host cash.
+- Guest refresh restored Alex and the committed property state.
+- Fresh version-2 entry after a local server restart successfully created/joined and started a new room. An auction for Green Street Pizza accepted Alex’s $80 bid and synchronized it to Quan. At timeout Alex received it for $80, both clients showed $1,420 guest cash, and the property detail card displayed all six rent levels.
+- Quan offered Study Commons for $125; Alex received and accepted. Both showed Alex owning it, Quan $1,350 and Alex $1,375.
+- Phone viewport: turn controls above board, board horizontally scrollable, no horizontal page overflow. Property details and trading dialogs accessible through real controls.
+- Desktop and mobile screenshots saved alongside the project output.
 
-1. Create room; host start disabled with one player.
-2. Join by code; both player lists synchronize.
-3. Host starts; both clients display the game.
-4. Roll, automatic movement, purchase, rent and turn handoff synchronize.
-5. Refresh restores identity, balances and property ownership.
-6. Timeout advances inactive turns.
-7. Mobile Rules modal and narrow layouts inspected.
-8. Countdown expiry automatically finalizes; both browsers display the identical leaderboard.
+Browser checks used a local event-stream adapter, not hosted Supabase Realtime. The expanded hosted migration, native concurrency/staging test, production function deployment and two-mode behavior remain unverified. The old Playwright suite targets legacy rules; it was not rerun during this upgrade. Optional sound was not added because no sound system exists.
 
-Saved screenshots: `../campusstack-preview.png` and `../campusstack-results.png`.
+## Bugs caught and repaired
 
-## Failures, workarounds and remaining checks
+SQL alias ambiguity in trade/debt actions; nonunique test room codes; random event lookup re-evaluating random() per row; Jail-release salary omission; changed mortgage state in outstanding offers; duplicate mobile/desktop grant selector IDs; mortgaged property card incorrectly showing base rent.
 
-- Native PostgreSQL could not initialize inside the authoring sandbox because OS shared-memory operations were denied. PGlite executes PostgreSQL SQL/PLpgSQL and RLS locally, but serializes connections. **Hosted concurrent row-lock behavior is not yet independently verified.** `TEST_DATABASE_URL` supports tests against a disposable native PostgreSQL cluster.
-- Standalone Playwright Chromium launch failed due to macOS Mach-port sandbox restrictions. The automated Playwright browser suite was written, but **has not completed here**. Equivalent core flows were verified using the in-app browser tools; these used separate storage origins rather than separate physical devices.
-- The local transport uses an authenticated HTTP event stream. **Actual Supabase Realtime delivery, hosted Edge Function deployment and Vercel deployment remain unverified** until the user configures those services.
-- No credentials were available or hardcoded. No Supabase or Vercel resources were provisioned or published.
-- One build invocation used the machine’s default Node 18 and restricted home npm cache; rerunning with Node 22 and a workspace cache passed.
-- Vite’s file watcher did not pick up edits reliably in this workspace; development polling was enabled.
-- No Cron/scheduled jobs, account login, trading, auctions, upgrades, mortgages, selling or elimination were added.
+## Local bot harness (PR #1 continuation)
 
-Follow the hosted two-device smoke test in `README.md` before public launch.
+- 62 Node tests passed: original 48 plus 14 bot tests.
+- TypeScript and production builds passed with `VITE_ENABLE_TEST_BOTS` false and
+  true. An independent esbuild test checks both flags with production mode and
+  confirms the bot setup/panel/controller are absent.
+- Disabled local server returned `Local test bots are disabled` for a direct
+  `/test-bots/create` request. Hosted game-api has no bot endpoint or action.
+- Chrome localhost UI created human + 1, + 2, + 3 bots; distinct characters and
+  full player lists appeared in the normal lobby.
+- Played a four-player match: chose Coffee, rolled 5+2, bought Campus Gym for $160,
+  ended the turn; bots automatically rolled, flew from Airport, bought assets,
+  paid fees/events, crossed START and returned the turn to the human.
+- Verified pause, Fast speed, reset to a new four-player lobby, and reload.
+- Production preview showed the ordinary multiplayer home with no bot option.
+- Automated fixtures exercise capped finite auctions, debt liquidation/payment,
+  bankruptcy, legal upgrades/Jail/Airport/event choices, authenticated controls,
+  trade rejection and all four normal bot victory results. Victory scenarios use
+  controlled database fixtures followed by normal actions, not full-length matches.
+
+Limitations: paused bots still face normal game deadlines; auctions remain 30s
+in Fast/Instant; reset creates a new room and pauses the previous one; local
+server restart discards rooms. No sophisticated negotiation or counters, and
+Classic/Chaos remains deferred. No production deployment was performed.
+
+## Desktop tabletop UI pass
+
+- 63 Node tests pass: all 62 prior tests plus a tabletop regression covering full
+  accessible property names, 40-space rendering, shared occupancy, mortgages and
+  Landmark development. TypeScript and production build pass.
+- Verified exact CSS viewports with devicePixelRatio=1 and no CSS zoom:
+  1366×768, 1440×900, 1536×864, 1920×1080. At each size the document dimensions
+  equal the viewport; all 40 tile bounds are inside it. The normal-turn center
+  stage has no internal scrolling and its main controls are visible.
+- Local browser exercised human roll, Airport selection, purchase, doubles,
+  property deed, property manager and trade dialogs; observed normal bot turns,
+  auctions, complete districts and building markers using the existing bot harness.
+- At 1366×768, Airport/property offer and auction stages fit without internal
+  scrolling. Original 30-second server timers, bidding, ownership and cash remain
+  synchronized. No schema, RPC, bot strategy/controller or engine changes.
+- Screenshots captured at all four target sizes; requested 1366×768, 1440×900 and
+  1920×1080 images are delivered in chat alongside the source update.
+
+Desktop-first limitations: narrow widths retain desktop composition with scrolling;
+phone-specific sheets/layouts are deferred. The 2.5D treatment uses restrained CSS
+perspective and layered shadows rather than a 3D engine. Long history, holdings and
+complex dialogs scroll within their own panels. No main merge or production deploy.
+
+## Focused desktop material polish
+
+- Presentation-only update: perimeter order/perspective retained, with an additional
+  approximately 7–8% board reduction and wider rail separation. The upright action
+  card is approximately 12–15% narrower, with quieter secondary controls.
+- Data-driven CornerTile accepts artwork, primary label and optional subtitle.
+  Airport uses the shared SVG emblem at a restrained size and “Fast Travel” copy.
+- Strengthened owner bands, physical piece bases, building/Landmark markers, mortgage
+  labels and district accents; separated score rail with always-visible asset/status
+  metadata and expanded mortgage information. Added restrained shrubs/benches,
+  material shadows, inset dice pips, doubles emphasis and a deliberate slim history bar.
+- Dice tumble starts from confirmed snapshot dice/roll events, rather than request
+  pending state. Existing confirmed movement/cash/building/event/auction/victory
+  animations remain; reduced-motion overrides apply to all new effects.
+- 63 Node tests pass, including corner copy/accessibility and compact player metadata.
+  TypeScript and production build pass. All four exact desktop viewports have all
+  40 tile bounds visible, no page overflow and clear normal-turn action controls.
+- Browser played roll/rent and purchase/auction flows. Smaller offer/auction panels
+  were compacted after an intermediate perimeter overlap was caught during review.
+  Screenshots delivered at 1366×768, 1440×900 and 1920×1080.
+- No rules, board data/order, Supabase schema/RPC, bot logic or victory evaluator
+  changes. No merge or production deployment. Dense event choices/dialogs retain
+  their existing scrolling behavior; portrait mobile remains out of scope.
+
+## Shared tile typography and marker zones
+
+- All 40 spaces use a reusable icon/text grid and shared TileLabel: natural wrapping
+  to two lines, measured title fitting in a narrow 9.5–12px range, no ellipsis,
+  clipping or horizontal scaling. Prices stay 9px on a separate line, including
+  mortgaged properties. Student Apts is a board-only label; Observatory remains
+  unabbreviated and all authoritative names/deeds remain unchanged.
+- Pieces fan along outward edge anchors; owner badges and development sit toward
+  the quad. Interior gutters were tightened to reclaim text height while keeping
+  the approved outer board dimensions/perspective and whitespace intact.
+- Added development-only `/__dev/tiles` fixture/report covering all 40 spaces,
+  mortgage/development/ownership states and one/four pieces per space. Geometry
+  checks flag name width/height, subtitle overflow and markers crossing any tile's
+  text/icon. It makes no game/server/session requests.
+- Cross-tile audit at exact 1366×768, 1440×900 and 1920×1080 viewports (DPR 1):
+  40 spaces, 160 pieces, zero text/marker failures. Observatory title measured
+  9.77px, 10.59px and 12px respectively. Live match screenshots at each size show
+  all tiles/pieces inside the viewport and no page overflow.
+- All 63 Node tests pass; TypeScript/production build pass. Production JavaScript
+  contains no tile-lab fixture/UI strings. Presentation changes only; no engine,
+  authoritative board data, Supabase/RPC or bot changes. No merge or deployment.
+
+## Isometric diamond camera and toy miniatures
+
+- Replaced the mildly tilted rectangular plane with a projected equal-sided
+  square: 45° rotation, a 2:1 diamond silhouette, SVG slab sides and ground shadow.
+  Logical space order, movement, assets and action validation remain unchanged.
+- Preserved open tabletop margins and a large quad; moved turn actions into a
+  separate right dock with a compact expandable rail. Only one physical dice
+  stage renders. Complex dock panels scroll independently of the board.
+- Original SVG toys have shaded roofs/walls, plinths, windows, annexes and Landmark
+  flags. Corner-aware footprints/anchors and four original corner monuments keep
+  names, prices and primary icons readable. Ownership uses colored tile rims.
+- Tile lab now audits cross-tile text/icon collisions and oriented rectangles against actual piece paint
+  bounds, miniature/monument bounds and mortgage locks. One/four-piece fixtures
+  and an explicit Recheck action are available. At exact 1366×768, 1440×900,
+  1536×864 and 1920×1080: 40 tiles, 160 pieces, zero overflow/collision failures.
+- Added a DEV-only read-only full scene preview at `/__dev/tabletop` to review
+  four-player rails and several upgrade levels without touching a room/session.
+  Screenshot fixtures are labeled read-only; they are not multiplayer state.
+- All 64 Node tests pass and TypeScript/production build pass. Production JS
+  contains no visual fixture/UI strings. Browser deed inspection opens the
+  correct full Observatory name through the projected hit target.
+- Scope is presentation/components/dev fixtures/tests/docs only. No Supabase,
+  engine, authoritative board data, room/session or bot changes. No main merge
+  or production deployment. Portrait mobile remains outside this desktop pass.
+
+Surface polygons paint below all labels and hit targets, so neighboring faces
+cannot hide final letters. Property print follows the other projected square
+axis, retaining a readable icon/text grid and separating adjacent name lanes.
+The final audit includes text/price/icon-to-text collisions as well as markers.

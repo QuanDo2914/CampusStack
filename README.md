@@ -1,6 +1,6 @@
 # CampusStack
 
-An original, 15-minute campus property game for 2–4 people. React + Vite + TypeScript, with Supabase Postgres, Edge Functions and Realtime in production. No user accounts or Supabase Auth users are created.
+An original campus property-trading game for 2–4 people. Buy. Build. Trade. Own the campus. React + Vite + TypeScript, with Supabase Postgres, Edge Functions and Realtime in production. No user accounts or Supabase Auth users are created.
 
 ## Run locally now — no Supabase credentials needed
 
@@ -17,31 +17,37 @@ The development server uses PGlite (embedded PostgreSQL) to execute the actual p
 
 This local setup serves its backend on loopback and is intended for multiple browsers on the same computer. To play across phones/laptops, deploy both frontend and Supabase as described below. HTTPS is needed for browser secure-context APIs. There is no fake client-side game engine.
 
-## Rules
+## Expanded rules (new rooms)
 
-- Everyone starts on START with $1,500. The host starts with 2–4 players; seating order determines turns.
-- One six-sided die per turn. Movement resolves on the server. Crossing **or landing** on START awards $100 **once for that movement**.
-- Unowned property: buy at its fixed price or skip. Buying requires sufficient cash. Either choice ends your turn.
-- Someone else’s property: pay full listed rent automatically. Your own property: no charge.
-- Events: Scholarship +$150; Parking Ticket −$75; Free Coffee +$50; Campus Construction −$100, each equally likely.
-- Fee spaces charge their listed amount. Mandatory charges may make cash negative. No selling, elimination or bankruptcy.
-- A turn lasts **30 seconds total**, including a purchase decision. An expired unrolled turn skips; an expired purchase skips the purchase.
-- The match ends after **15 minutes**. Net worth = cash + original purchase prices of owned properties. Equal top scores share the win.
-- Categories are visual neighborhoods only; no rent multipliers. No trading, auctions, upgrades or mortgages.
+- Forty campus spaces on a square board; START, Airport, Go To Jail, and Jail are the four corners. Four stations, eight color groups, and a restful Parking Commons on an edge.
+- Choose one of eight unique character tokens. Start with $1,500. Roll **two dice**. Normal dice movement passing or landing on START pays $100 once; teleportation/event travel never does.
+- Doubles grant another roll after resolving the landing. Three consecutive doubles send you to Jail and end your turn.
+- Buy an unowned asset or skip to a synchronized 30-second auction. All active players can bid with available cash. Unbid assets stay unowned.
+- Rent transfers automatically. Stations scale $25/$50/$100/$200. An undeveloped complete, unmortgaged color group doubles base rent.
+- Complete color groups unlock five development levels. Build and sell evenly. Inspect any property; open Property manager on your turn without needing to land on it.
+- Trade assets and cash with accept/decline/counter. Sell group upgrades before trading. Offers are revalidated at acceptance, including mortgage state.
+- Mortgage undeveloped assets for half their purchase price; repay mortgage + 10% to unmortgage. Mortgaged assets charge no rent. Sell upgrades at half their cost, or undeveloped assets to the bank for mortgage value (mortgaged sales pay $0).
+- Mandatory debts pause the turn for liquidation, trading or bankruptcy; cash never becomes negative. Bankruptcy transfers assets/cash to a player creditor, or returns assets to the bank. Eliminated players spectate.
+- Jail: attempt doubles, pay $50, or use a pass. Third failed attempt requires bail and then moves that roll. Jail-release doubles do not give an extra roll. Visitors are free.
+- Airport: click any **other** valid destination. Resolve that landing normally. Flying to START pays no salary; stations must still be purchased.
+- Thirty event cards include cash, movement, Jail, grants, targeted gifts, group payments and one-use rent effects. Birthday Fund collects only available cash from each other player; grant upgrades still follow complete-set/even-building rules.
+- Decisions expire after 30 seconds. Pending purchases become auctions. Inactive turns advance. Debt expiry automatically sells buildings and mortgages assets before paying or declaring bankruptcy.
+- Exactly four victories: **Last Player Standing**, **Straight-Line Monopoly** (every purchasable space on one side, including the station), **Transit Monopoly** (all four stations), **Property Empire** (three complete groups, two entirely level 5).
+- Achievements never add win conditions. If an action satisfies multiple victories, the evaluator uses a deterministic priority: last standing, transit, side, empire; simultaneous player eligibility uses seating order.
 
-The same rules are available through the Rules modal.
+The in-app Rules modal explains all mechanics. Expanded games currently play until a qualifying victory; no net-worth timer winner. Existing version-1 rooms retain their original 20-space, one-die, 15-minute rules until they finish. These schema versions are **not** the two requested gameplay modes: only one gameplay mode exists in the inspected checkouts and GitHub main. Mode definitions and final timer behavior are pending clarification; see `UPGRADE.md`.
 
 ## Production architecture
 
-The browser sends intentions to `game-api`; it cannot write authoritative tables or execute mutation RPCs. The function uses a server-only Supabase key to call SQL functions. SQL functions authenticate a 256-bit player secret by its SHA-256 hash, lock the room row, validate deadlines/turn/phase/revision, compute outcomes, and commit a complete snapshot atomically.
+The browser sends intentions to `game-api`; it cannot write authoritative tables or execute mutation RPCs. The function uses a server-only Supabase key to call SQL functions. SQL functions authenticate a 256-bit player secret by its SHA-256 hash, lock the room row, validate turn/phase/revision and authoritative decision deadlines, compute outcomes, and commit a complete snapshot atomically.
 
-`campus_private` contains rooms, players, board spaces, ownership, game state, events, idempotency records and rate buckets. The only browser-readable table is `public.room_snapshots`; RLS allows a row only when the signed JWT’s `room_session_id` matches it. An ordinary publishable key has no room claim and returns **zero snapshots**, including when attempting enumeration. No browser insert/update/delete policies exist. The six-character join code never appears in snapshots or subscription filters.
+`campus_private` contains rooms, players, board definitions, legacy ownership, expanded assets, trade offers, game state, events, idempotency records and rate buckets. The only browser-readable table is `public.room_snapshots`; RLS allows a row only when the signed JWT’s `room_session_id` matches it. An ordinary publishable key has no room claim and returns **zero snapshots**, including when attempting enumeration. No browser insert/update/delete policies exist. The six-character join code never appears in snapshots or subscription filters.
 
 Room session IDs have 64 hexadecimal characters derived from two randomly generated UUIDs. Players receive one only after joining/creating successfully. Read tokens are signed on the server, expire in one hour and refresh while connected. Player IDs, room session IDs, the human join code and the player’s secret are persisted in localStorage on that device. Clearing storage loses the seat. Sharing a read token grants access to that room’s public game state; it does not grant action rights without the separate player secret.
 
 Mutation request IDs prevent retries from rerolling or charging twice. Gameplay revisions reject stale clicks, even if a player gets another turn later. Presence heartbeats update last-seen timestamps without advancing game revisions. Supabase Realtime sends whole snapshots; revision checks discard older state. Subscribe-then-fetch, 15-second sync heartbeats and connection retries recover missed events. Token animation uses committed positions and respects reduced-motion preferences.
 
-There are **no Cron jobs**. Clients call `advance-turn` at turn expiry and `finish-game` at match expiry. Both are idempotent under the room lock; every other action checks the match deadline too. If everyone is offline, wall-clock time keeps passing and the next authenticated request finalizes the expired match. The final leaderboard is stored once.
+There are **no Cron jobs**. Connected clients request timeout progression; every action checks decision deadlines under the same room lock. A centralized `check_victory` function runs after ownership, upgrade, trade and elimination changes. Once finished, further mutations are rejected and retries return the committed result. Expanded action idempotency also fingerprints payloads. Legacy rooms keep their authoritative `match_ends_at` and idempotent timer finalization. If everyone is offline, the next authenticated request progresses the expired decision.
 
 Basic entry rate limiting is keyed by a hash of the gateway-forwarded address; action limits use a hash of the player secret. Raw addresses are not stored. This is modest MVP abuse protection, not a substitute for gateway-level controls. CORS accepts an explicit origin list. Failed infrastructure calls do not return database errors or credentials.
 
@@ -55,7 +61,7 @@ supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
 ```
 
-The migrations are applied in numeric order (`001` through `005`). They register `room_snapshots` with the `supabase_realtime` publication. Confirm Realtime is enabled for that table. No anonymous sign-in setting is needed.
+The migrations are applied in numeric order (`001` through `007`). They register `room_snapshots` with the `supabase_realtime` publication. Confirm Realtime is enabled for that table. No anonymous sign-in setting is needed.
 
 ### Configure the room-token signing key
 
@@ -95,7 +101,11 @@ These two values are public configuration. No service-role key, server secret AP
 npm run dev
 ```
 
-Open two independent browser sessions and repeat create → join → start → roll → buy/skip. Verify updates reach the other session through Supabase Realtime. This is the required hosted integration check before sharing publicly.
+Open two independent browser sessions and repeat create → join → start → roll → buy/auction → manage → trade → end turn. Verify updates reach the other session through Supabase Realtime. This is the required hosted integration check before sharing publicly.
+
+## Upgrading the existing hosted project
+
+See `UPGRADE.md` for the staged release and compatibility checks. Do not rerun old migrations in a database where they already exist. Keep all existing signing keys and environment secrets unchanged. Apply only the new migrations after confirming migration history, then deploy the updated function, then the frontend. The five-argument entry RPC explicitly opts into expanded rules; old clients use the original four-argument RPC. Old cached clients are rejected when joining an expanded room with a clear refresh message.
 
 ## Vercel deployment
 
@@ -120,11 +130,11 @@ Database tests cover room entry, capacity, invalid/full/started rooms, host perm
 
 Default tests run in PGlite, which serializes connections. To exercise real PostgreSQL row-lock concurrency, run each database test file against its own **empty disposable PostgreSQL database**, setting `TEST_DATABASE_URL`. The helper creates roles/schema/publication and migrations and refuses to work cleanly in a pre-existing application database. Use an isolated test cluster with a privileged setup user; roles are cluster-wide, so separate test files must not share a populated cluster. PGlite tests alone do not prove concurrent locking on hosted Supabase.
 
-The Playwright test server sets `CAMPUS_TEST_MATCH_SECONDS=8` only in the development harness to check expiry without waiting 15 minutes. The production Edge Function and SQL actions have no configurable match duration; normal local play uses 15 minutes. Stop an existing local test server before running E2E tests so the shortened test duration takes effect.
+The Playwright test server sets `CAMPUS_TEST_MATCH_SECONDS=8` only in the development harness to check expiry without waiting 15 minutes. The legacy test configuration sets `CAMPUS_LEGACY_TEST=1`; normal local play uses expanded rules. Expanded games have no timer winner. Stop an existing local test server before running E2E tests so the shortened test duration takes effect.
 
 The Playwright suite creates independent storage contexts, tests the lobby, gameplay, refresh and mobile layout. Browser launch requires the host to permit Chromium processes. In the restricted authoring environment, standalone Chromium launch was blocked; the app’s browser tools were used to verify two separate storage origins instead.
 
-`TEST_REPORT.md` records what was actually verified. Hosted Supabase Realtime, Edge deployment and Vercel have not been tested because no projects/accounts are configured yet.
+`TEST_REPORT.md` records what was actually verified. The expanded release has not been applied to hosted Supabase or Vercel. Existing production setup and credentials are preserved; deployment awaits the mode/timer clarification.
 
 ## Operational limits for the MVP
 
@@ -134,3 +144,103 @@ The Playwright suite creates independent storage contexts, tests the lobby, game
 - Local development rooms reset on server restart; hosted rooms persist in Postgres.
 - Old rooms are retained. Add manual retention/cleanup later if needed; there is no background scheduler in this MVP.
 - Supabase signing keys, Realtime delivery, permissions and CORS must be verified in the target project before public launch.
+
+### Local human vs computer test harness
+
+Stop any older local preview, run `npm run dev:bots` in the source checkout, then
+open the Vite localhost URL. If ports are occupied, use e.g.
+`CAMPUS_LOCAL_PORT=8790 CAMPUS_VITE_PORT=5177 npm run dev:bots`.
+Both servers bind to loopback; Vite fails clearly rather than silently choosing an
+unapproved origin when its selected port is occupied.
+Choose **🤖 VS COMPUTER — TEST MODE**, enter your name and select 1–3 bots
+(default 2). Choose your character in the normal lobby and start the match.
+The existing board, actions, trade UI and victory screen are shared with multiplayer.
+
+`npm run dev:local` runs ordinary local multiplayer with bots disabled. Stop the
+process to discard ephemeral rooms. Never set `VITE_ENABLE_TEST_BOTS=true` in
+Vercel or Supabase. Both Vite development mode and that explicit flag are required;
+production builds remove the bot menu/setup/panel even if the flag is accidentally
+set. The local client also requires a loopback development server URL.
+
+The server flag `CAMPUS_ENABLE_TEST_BOTS=true` is set only by `dev:bots`. Bot
+endpoints exist only in `tests/local-server.mjs`, bound to `127.0.0.1`, with an
+explicit loopback-origin allowlist. They are disabled when `TEST_DATABASE_URL` is
+provided. No bot endpoint, SQL migration or hosted Edge Function change is needed.
+Local test-room metadata is stored in an ephemeral private table; bot tokens stay
+in server memory. Human identity uses the normal saved session and scoped stream.
+
+The developer panel offers pause/resume, skip delay, Normal (750ms), Fast (150ms),
+and Instant (10ms), plus reset into a fresh lobby with the same bot count. Pause
+stops automation; ordinary 30-second turn/auction clocks continue. Fast/Instant
+shorten decisions, not engine deadlines. Reset pauses the previous room. Reload
+reconnects your saved seat; restarting the local server discards all local rooms.
+
+Bots keep a $300 reserve, value set/station/side progress, use stable per-player
+auction caps, develop evenly, choose strategic Airport destinations, use Jail
+passes/bail/doubles, and recover debt by selling upgrades and mortgaging before
+bankruptcy. They accept or decline human trades and reject immediate station/side
+victory giveaways. All decisions use the existing authenticated transactional RPC;
+no React state mutations, external AI, special human benefits or alternate engine.
+Classic/Chaos is still deferred; this is a testing environment for expanded rules.
+
+### Desktop tabletop presentation
+
+Expanded games use a raised, gently angled CSS board with original inline SVG
+campus stickers and character pieces. The upright center stage and player rail
+consume the same snapshots/action callbacks as before. No rendering library or
+new backend metadata is required. Short tile labels are presentation-only; full
+property names remain available in accessible labels, tooltips and deed dialogs.
+
+Board height responds to desktop viewport height; the compact header, collapsed
+history and expandable player rail preserve the entire 40-space loop at normal
+browser zoom. Verified targets: 1366×768, 1440×900, 1536×864 and 1920×1080.
+Smaller widths retain a scrollable desktop composition; phone layouts are not
+optimized in this pass. The rendering components under `src/components/tabletop`
+are separate from room state and can be reused by a future landscape client.
+
+Ownership badges, mortgage locks, house/landmark markers and complete-set accents
+come from authoritative snapshot data. Dice/token/cash/event animations are purely
+visual and respect reduced-motion preferences. Detailed trades, deeds and property
+management remain accessible through the existing dialogs; game rules are unchanged.
+
+Corner artwork now uses a presentation-only `CornerTile` composition accepting an
+emblem, label and optional subtitle. Retheming those visual inputs does not alter
+board data or action handling. The compact score rail shows assets and turn status
+at a glance; expand a player to inspect sets, Transit, mortgages and achievements.
+
+### Tile layout audit (development only)
+
+With the local preview running, open `/__dev/tiles` (for example,
+`http://localhost:5180/__dev/tiles`). It renders all 40 real BoardTile components
+with ownership, mortgage and development fixtures, without connecting to the game
+server or touching your room. Toggle four pieces on every space to stress token
+anchors. The report flags title/subtitle overflow, titles over two lines, and
+piece/building/owner/lock collisions with any tile's text or primary icon.
+
+TileLabel measures available width/height and fits titles between 9.5–12px; the
+price remains 9px on its own line. Board-only display labels live in
+`src/components/tabletop/displayNames.ts`; authoritative names remain unchanged
+in board data, accessible tile names and deeds. The audit module is omitted from
+production JavaScript.
+
+### Isometric diamond presentation
+
+The current desktop camera uses a square rotated 45° and projected to a 2:1
+screen-space diamond. SVG slab faces provide real geometric thickness and a
+contact shadow. Logical `tilePosition` indices still drive every tile and moving
+piece; the camera changes presentation only. Native labels rotate along each
+edge without horizontal scaling or perspective compression.
+
+The lawn stays open around the physical dice. Turn actions live in a separate
+right dock above the compact, expandable player rail. Complex action/details
+panels can scroll independently while the full board remains visible. Ownership
+uses colored tile rims; original SVG toy miniatures have shaded walls, roofs,
+plinths, annexes and Landmark flags. Their size/depth adapts near corners to keep
+labels clear. Four original corner monuments share the same projected roof style.
+
+`/__dev/tiles` now exercises this camera and uses oriented collision geometry for
+rotated labels. It includes a Recheck layout button and one/four-piece fixtures.
+`/__dev/tabletop` provides a read-only full-scene preview with four players and
+several development levels. Both routes are DEV-only, make no room/server
+requests, and are excluded from production JavaScript. To play normally with
+bots, return to `/` on the `npm run dev:bots` server.
