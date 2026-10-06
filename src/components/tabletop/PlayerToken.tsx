@@ -17,7 +17,7 @@ export function PlayerToken({
       aria-label={`${player.name}'s ${c} piece`}
     >
       <svg
-        viewBox="0 0 64 64"
+        viewBox="0 0 64 84"
         aria-hidden="true"
         fill="none"
         stroke="#24483b"
@@ -25,7 +25,13 @@ export function PlayerToken({
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M13 58q0-18 19-18t19 18" fill={colors[player.seat]} />
+        <ellipse cx="34" cy="78" rx="27" ry="5" fill="#173c2a" opacity=".2" stroke="none" />
+        <path d="M8 67v7c0 12 48 12 48 0v-7" fill={colors[player.seat]} />
+        <ellipse cx="32" cy="67" rx="24" ry="10" fill={colors[player.seat]} stroke="#173f31" />
+        <path d="M12 66q20 12 40 0" stroke="#fff5d0" opacity=".5" />
+        <path d="M22 51h20l6 16q-16 9-32 0Z" fill="#f4ead0" />
+        <g transform="translate(3 -1) scale(.9)">
+        <path d="M13 65q0-25 19-25t19 25" fill={colors[player.seat]} />
         {robot ? (
           <>
             <rect x="15" y="15" width="34" height="29" rx="9" fill="#e2eddf" />
@@ -90,6 +96,7 @@ export function PlayerToken({
             )}
           </>
         )}
+        </g>
       </svg>
     </span>
   );

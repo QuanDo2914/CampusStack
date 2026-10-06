@@ -47,10 +47,7 @@ export function ExpandedGame({
   return (
     <>
       <div className="expanded-heading tabletop-toolbar">
-        <div>
-          <span className="eyebrow">CAMPUS TABLETOP</span>
-          <h1>Your next chapter starts here.</h1>
-        </div>
+        <span className="match-caption">CampusStack · Live table</span>
         <details className="strategy-disclosure">
           <summary>Four ways to win</summary>
           <VictoryProgress snapshot={snapshot} playerId={me.id} />
@@ -69,33 +66,33 @@ export function ExpandedGame({
                 !busy &&
                 connected
               }
-            />
+            >
+              <section className="campus-center tabletop-stage quad-action-stage">
+                <div className="desktop-center-content">
+                  <CampusTurnControls
+                    snapshot={snapshot}
+                    session={session}
+                    busy={busy}
+                    connected={connected}
+                    seconds={turnSeconds}
+                    onAction={onAction}
+                    onManage={() => setManage(true)}
+                    onTrade={() => setTrade(true)}
+                  />
+                </div>
+              </section>
+            </CampusBoard>
           </div>
           <GameLog events={snapshot.events} />
         </div>
         <div className="tabletop-side-dock">
-          <section className="campus-center tabletop-stage iso-action-stage">              <div className="desktop-center-content">
-                <span className="stage-eyebrow">MEET IN THE QUAD</span>
-                <CampusTurnControls
-                  diceInQuad
-                  snapshot={snapshot}
-                  session={session}
-                  busy={busy}
-                  connected={connected}
-                  seconds={turnSeconds}
-                  onAction={onAction}
-                  onManage={() => setManage(true)}
-                  onTrade={() => setTrade(true)}
-                />
-              </div>
-          </section>
-        <CampusPlayerPanel
-          collapsedByDefault
-          snapshot={snapshot}
-          playerId={me.id}
-          onInspect={setInspect}
-          now={Date.now() + offset}
-        />
+          <CampusPlayerPanel
+            collapsedByDefault
+            snapshot={snapshot}
+            playerId={me.id}
+            onInspect={setInspect}
+            now={Date.now() + offset}
+          />
         </div>
       </div>
       {inspect !== null && (

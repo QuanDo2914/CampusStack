@@ -231,8 +231,8 @@ contact shadow. Logical `tilePosition` indices still drive every tile and moving
 piece; the camera changes presentation only. Native labels rotate along each
 edge without horizontal scaling or perspective compression.
 
-The lawn stays open around the physical dice. Turn actions live in a separate
-right dock above the compact, expandable player rail. Complex action/details
+The lawn stays open around a compact floating turn stage. The right dock holds
+the compact, expandable player rail. Complex action/details
 panels can scroll independently while the full board remains visible. Ownership
 uses colored tile rims; original SVG toy miniatures have shaded walls, roofs,
 plinths, annexes and Landmark flags. Their size/depth adapts near corners to keep
@@ -244,3 +244,34 @@ rotated labels. It includes a Recheck layout button and one/four-piece fixtures.
 several development levels. Both routes are DEV-only, make no room/server
 requests, and are excluded from production JavaScript. To play normally with
 bots, return to `/` on the `npm run dev:bots` server.
+
+
+### District miniature showcase and physical pieces
+
+Open `/__dev/development` on the development server to inspect levels 0–5
+side by side on real 2:1 projected tile surfaces. A district selector previews
+all eight architectural families. These are original SVG models built from
+shared roof/front/side primitives: one building, two buildings, a three-building
+cluster, a taller mid-rise, then a district Landmark. Level 0 stays empty.
+
+Character pieces have colored physical bases and small pedestals. A deterministic
+presentation-only placement hook keeps their feet inside the actual tile face,
+fans shared occupants, and avoids all neighboring names, prices and icons.
+Miniature structures use the same on-tile foot constraint and upper-left lighting.
+No authoritative position, ownership, level or dice result is changed.
+
+`/__dev/tiles` also checks on-tile feet, actual SVG paint bounds and
+building/pawn collisions. The four-pieces-per-space fixture is deliberately
+crowded; its initial packing can take a few seconds. `/__dev/tabletop` remains
+a read-only full-board fixture. These routes are omitted from production builds.
+
+For an isolated bot preview alongside another local session, run:
+
+```sh
+CAMPUS_LOCAL_PORT=8792 CAMPUS_VITE_PORT=5181 npm run dev:bots
+```
+
+Open `http://localhost:5181/`, select **VS COMPUTER — TEST MODE** beneath
+the home cards, enter a name and create the test room. Choose a character in
+its lobby and start. The backend is ephemeral local test storage; this does
+not update hosted Supabase. Normal turn timers still run when bots are paused.

@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  useTabletopPlacement,
+  placeTabletopObjects,
+} from "../components/tabletop/useTabletopPlacement";
+import { diamondFacePath } from "../components/tabletop/diamondGeometry";
 import { DiamondSurface } from "../components/tabletop/DiamondSurface";
 import { DiamondScenery } from "../components/tabletop/DiamondScenery";
 import { BoardTile } from "../components/tabletop/BoardTile";
@@ -49,20 +54,37 @@ type Point = { x: number; y: number };
 // Recover oriented rectangles from rotated DOM bounds. Axis-aligned bounds
 // over-report collisions between neighboring diagonal labels.
 function polygon(rect: DOMRect, angle = 0): Point[] {
-  const c = Math.cos(angle), s = Math.sin(angle), ac = Math.abs(c), as = Math.abs(s);
+  const c = Math.cos(angle),
+    s = Math.sin(angle),
+    ac = Math.abs(c),
+    as = Math.abs(s);
   const determinant = ac * ac - as * as;
   const w = (ac * rect.width - as * rect.height) / determinant;
   const h = (ac * rect.height - as * rect.width) / determinant;
-  const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
-  return [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]].map(([u,v]) => ({x:x+u*c-v*s,y:y+u*s+v*c}));
+  const x = rect.left + rect.width / 2,
+    y = rect.top + rect.height / 2;
+  return [
+    [-w / 2, -h / 2],
+    [w / 2, -h / 2],
+    [w / 2, h / 2],
+    [-w / 2, h / 2],
+  ].map(([u, v]) => ({ x: x + u * c - v * s, y: y + u * s + v * c }));
 }
 function intersects(a: Point[], b: Point[]): boolean {
-  return ![a,b].some(p => p.some((point,i) => {
-    const next = p[(i+1)%p.length], axis = {x:-(next.y-point.y),y:next.x-point.x};
-    const project = (q: Point[]) => q.map(v => v.x*axis.x+v.y*axis.y);
-    const aa = project(a), bb = project(b), tolerance = Math.hypot(axis.x,axis.y);
-    return Math.max(...aa) <= Math.min(...bb)+tolerance || Math.max(...bb) <= Math.min(...aa)+tolerance;
-  }));
+  return ![a, b].some((p) =>
+    p.some((point, i) => {
+      const next = p[(i + 1) % p.length],
+        axis = { x: -(next.y - point.y), y: next.x - point.x };
+      const project = (q: Point[]) => q.map((v) => v.x * axis.x + v.y * axis.y);
+      const aa = project(a),
+        bb = project(b),
+        tolerance = Math.hypot(axis.x, axis.y);
+      return (
+        Math.max(...aa) <= Math.min(...bb) + tolerance ||
+        Math.max(...bb) <= Math.min(...aa) + tolerance
+      );
+    }),
+  );
 }
 export function auditTiles(root: HTMLElement): string[] {
   const failures: string[] = [];
@@ -71,36 +93,168 @@ export function auditTiles(root: HTMLElement): string[] {
   const zoneNames: string[] = [];
   const zoneOwners: string[] = [];
   const textZones = (element: HTMLElement, angle: number) => {
-    const range = document.createRange(); range.selectNodeContents(element);
-    return [...range.getClientRects()].map(r => polygon(r,angle));
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return [...range.getClientRects()].map((r) => polygon(r, angle));
   };
-  tiles.forEach(tile => {
-    const name = tile.title, title = tile.querySelector<HTMLElement>(".tile-title")!, copy = tile.querySelector<HTMLElement>(".tile-copy")!;
+  tiles.forEach((tile) => {
+    const name = tile.title,
+      title = tile.querySelector<HTMLElement>(".tile-title")!,
+      copy = tile.querySelector<HTMLElement>(".tile-copy")!;
     const face = tile.querySelector<HTMLElement>(".tile-face,.corner-face")!;
     const matrix = new DOMMatrix(getComputedStyle(face).transform);
-    const angle = Math.atan2(matrix.b,matrix.a);
-    const icon = tile.querySelector<HTMLElement>(".tile-emblem,.corner-emblem")!;
-    const text = textZones(title,angle), emblem = polygon(icon.getBoundingClientRect(),angle);
-    zones.push(...text,emblem); zoneOwners.push(...text.map(() => name),name); zoneNames.push(...text.map(() => name + " title"),name + " icon");
-    if (title.scrollWidth > title.clientWidth+1) failures.push(`${name}: title too wide`);
-    if (title.clientHeight > parseFloat(getComputedStyle(title).lineHeight)*2+1) failures.push(`${name}: more than two title lines`);
+    const angle = Math.atan2(matrix.b, matrix.a);
+    const icon = tile.querySelector<HTMLElement>(
+      ".tile-emblem,.corner-emblem",
+    )!;
+    const text = textZones(title, angle),
+      emblem = polygon(icon.getBoundingClientRect(), angle);
+    zones.push(...text, emblem);
+    zoneOwners.push(...text.map(() => name), name);
+    zoneNames.push(...text.map(() => name + " title"), name + " icon");
+    if (title.scrollWidth > title.clientWidth + 1)
+      failures.push(`${name}: title too wide`);
+    if (
+      title.clientHeight >
+      parseFloat(getComputedStyle(title).lineHeight) * 2 + 1
+    )
+      failures.push(`${name}: more than two title lines`);
     const price = copy.querySelector<HTMLElement>("small");
-    if (price) { const prices = textZones(price,angle); zones.push(...prices); zoneOwners.push(...prices.map(() => name)); zoneNames.push(...prices.map(() => name + " price")); if (price.scrollWidth > price.clientWidth+1) failures.push(`${name}: subtitle overflow`); }
-    if (text.some(p => intersects(p,emblem))) failures.push(`${name}: icon/title overlap`);
+    if (price) {
+      const prices = textZones(price, angle);
+      zones.push(...prices);
+      zoneOwners.push(...prices.map(() => name));
+      zoneNames.push(...prices.map(() => name + " price"));
+      if (price.scrollWidth > price.clientWidth + 1)
+        failures.push(`${name}: subtitle overflow`);
+    }
+    if (text.some((p) => intersects(p, emblem)))
+      failures.push(`${name}: icon/title overlap`);
   });
-  zones.forEach((a,i) => zones.slice(i+1).forEach((b,k) => {
-    const j = i+k+1;
-    if (zoneOwners[i] !== zoneOwners[j] && intersects(a,b)) failures.push(`${zoneNames[i]} / ${zoneNames[j]}: cross-tile content overlap`);
-  }));
-  tiles.forEach(tile => tile.querySelectorAll<HTMLElement>(".piece-position .tabletop-token,.tile-buildings,.corner-monument,.tile-owner-marker,.mortgage-lock").forEach(marker => {
-    const collision = zones.findIndex(z => intersects(z,polygon(marker.getBoundingClientRect())));
-    if (collision >= 0) failures.push(`${tile.title}: marker/content overlap (${marker.getAttribute("class")} / ${zoneNames[collision]})`);
-  }));
+  zones.forEach((a, i) =>
+    zones.slice(i + 1).forEach((b, k) => {
+      const j = i + k + 1;
+      if (zoneOwners[i] !== zoneOwners[j] && intersects(a, b))
+        failures.push(
+          `${zoneNames[i]} / ${zoneNames[j]}: cross-tile content overlap`,
+        );
+    }),
+  );
+  tiles.forEach((tile) =>
+    tile
+      .querySelectorAll<HTMLElement>(
+        ".piece-position .tabletop-token,.tile-buildings,.corner-monument,.tile-owner-marker,.mortgage-lock",
+      )
+      .forEach((marker) => {
+        const svg = marker.matches("svg")
+          ? (marker as unknown as SVGSVGElement)
+          : marker.querySelector<SVGSVGElement>("svg");
+        let bounds = marker.getBoundingClientRect();
+        if (svg && svg.getScreenCTM()) {
+          const box = svg.getBBox(),
+            matrix = svg.getScreenCTM()!;
+          const a = new DOMPoint(box.x, box.y).matrixTransform(matrix),
+            b = new DOMPoint(
+              box.x + box.width,
+              box.y + box.height,
+            ).matrixTransform(matrix);
+          bounds = new DOMRect(a.x, a.y, b.x - a.x, b.y - a.y);
+        }
+        const collision = zones.findIndex((z) =>
+          intersects(z, polygon(bounds)),
+        );
+        if (collision >= 0)
+          failures.push(
+            `${tile.title}: marker/content overlap (${marker.getAttribute("class")} / ${zoneNames[collision]})`,
+          );
+      }),
+  );
+  // Check physical feet, not billboards: a roof can rise above the plane,
+  // while every pawn base must remain on its actual space.
+  for (const tile of tiles) {
+    const rect = tile.getBoundingClientRect();
+    const index = Number(tile.dataset.testid?.replace("space-", ""));
+    const coordinates = diamondFacePath(index, tile.dataset.edge!)
+      .match(/-?\d+/g)!
+      .map(Number);
+    const outline: Point[] = Array.from(
+      { length: coordinates.length / 2 },
+      (_, i) => ({
+        x: rect.x + (coordinates[i * 2] * rect.width) / 100,
+        y: rect.y + (coordinates[i * 2 + 1] * rect.height) / 100,
+      }),
+    );
+    const inside = (point: Point) => {
+      let yes = false;
+      for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+        const a = outline[i],
+          b = outline[j];
+        if (
+          a.y > point.y !== b.y > point.y &&
+          point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x
+        )
+          yes = !yes;
+      }
+      return yes;
+    };
+    tile
+      .querySelectorAll<SVGSVGElement>(".piece-position svg")
+      .forEach((svg) => {
+        const foot = new DOMPoint(32, 74).matrixTransform(svg.getScreenCTM()!);
+        if (!inside(foot))
+          failures.push(`${tile.title}: pawn foot outside its tile`);
+      });
+    const building = tile.querySelector<SVGSVGElement>(".tile-buildings svg");
+    if (building) {
+      const foot = new DOMPoint(50, 98).matrixTransform(
+        building.getScreenCTM()!,
+      );
+      if (!inside(foot))
+        failures.push(`${tile.title}: miniature foot outside its tile`);
+    }
+    const solidBuildings = [
+      ...tile.querySelectorAll<SVGGraphicsElement>(".mini-structure"),
+    ].map((g) => {
+      const box = g.getBBox(),
+        m = g.getScreenCTM()!;
+      const a = new DOMPoint(box.x, box.y).matrixTransform(m),
+        b = new DOMPoint(box.x + box.width, box.y + box.height).matrixTransform(
+          m,
+        );
+      return polygon(new DOMRect(a.x, a.y, b.x - a.x, b.y - a.y));
+    });
+    tile
+      .querySelectorAll<HTMLElement>(".piece-position .tabletop-token")
+      .forEach((token) => {
+        const svg = token.querySelector<SVGSVGElement>("svg")!,
+          box = svg.getBBox(),
+          m = svg.getScreenCTM()!;
+        const a = new DOMPoint(box.x, box.y).matrixTransform(m),
+          z = new DOMPoint(
+            box.x + box.width,
+            box.y + box.height,
+          ).matrixTransform(m);
+        if (
+          solidBuildings.some((b) =>
+            intersects(b, polygon(new DOMRect(a.x, a.y, z.x - a.x, z.y - a.y))),
+          )
+        )
+          failures.push(`${tile.title}: pawn/building collision`);
+      });
+  }
+  root
+    .querySelectorAll<HTMLElement>('[data-placement="unresolved"]')
+    .forEach((m) =>
+      failures.push(
+        `${m.closest<HTMLElement>(".tabletop-tile")?.title}: no clear physical placement`,
+      ),
+    );
   return failures;
 }
 export default function TileLab() {
   const root = useRef<HTMLDivElement>(null);
   const [stacked, setStacked] = useState(false);
+  useTabletopPlacement(root, String(stacked));
   const [failures, setFailures] = useState<string[]>([]);
   useEffect(() => {
     const element = root.current!;
@@ -111,7 +265,7 @@ export default function TileLab() {
     };
     const observer = new ResizeObserver(check);
     observer.observe(element);
-    element.querySelectorAll(".tile-face").forEach(e => observer.observe(e));
+    element.querySelectorAll(".tile-face").forEach((e) => observer.observe(e));
     const mutations = new MutationObserver(check);
     mutations.observe(element, {
       subtree: true,
@@ -141,7 +295,14 @@ export default function TileLab() {
         Development only · no server/session access
       </div>
       <div className="tile-lab-tools">
-        <button onClick={() => setFailures(auditTiles(root.current!))}>Recheck layout</button>
+        <button
+          onClick={() => {
+            placeTabletopObjects(root.current!);
+            setFailures(auditTiles(root.current!));
+          }}
+        >
+          Recheck layout
+        </button>
         <label>
           <input
             type="checkbox"
@@ -159,7 +320,7 @@ export default function TileLab() {
           <div ref={root} className="tabletop-scene diamond-scene">
             <div className="diamond-board">
               <DiamondScenery />
-              <DiamondSurface snapshot={tileFixture}/>
+              <DiamondSurface snapshot={tileFixture} />
               {campusBoard.map((b) => (
                 <BoardTile
                   key={b.index}
@@ -173,7 +334,6 @@ export default function TileLab() {
                 />
               ))}
             </div>
-
           </div>
         </div>
         <aside className="tile-lab-report" data-pass={!failures.length}>
@@ -189,7 +349,7 @@ export default function TileLab() {
           </ul>
           <p>
             Checks title width/height, subtitle overflow, and icon/marker
-            collisions.
+            collisions, solid buildings, and on-tile pawn feet.
           </p>
         </aside>
       </div>

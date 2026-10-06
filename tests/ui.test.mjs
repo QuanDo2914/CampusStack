@@ -5,7 +5,7 @@ let ui;
 before(async () => {
   const result = await build({
     stdin: {
-      contents: `export {createElement} from 'react';export {renderToStaticMarkup} from 'react-dom/server';export {ExpandedGame} from './src/components/expanded/GameScreen';export {PropertyCard} from './src/components/expanded/PropertyCard';export {VictoryScreen} from './src/components/expanded/VictoryScreen';`,
+      contents: `export {MiniatureBuilding,architecture} from './src/components/tabletop/MiniatureBuilding';export {createElement} from 'react';export {renderToStaticMarkup} from 'react-dom/server';export {ExpandedGame} from './src/components/expanded/GameScreen';export {PropertyCard} from './src/components/expanded/PropertyCard';export {VictoryScreen} from './src/components/expanded/VictoryScreen';`,
       resolveDir: new URL("../", import.meta.url).pathname,
     },
     bundle: true,
@@ -215,4 +215,15 @@ test("diamond presentation keeps the authoritative tile indices and development 
   assert.match(html,/tabletop-side-dock/);
   assert.match(html,/Roll Dice/);
   assert.ok(!html.includes("tabletop-plane campus-board"));
+});
+
+test("development silhouettes distinguish zero, one, two, three, mid-rise and district Landmarks", () => {
+  for (const district of Object.keys(ui.architecture)) {
+    const renderLevel = level => ui.renderToStaticMarkup(ui.createElement(ui.MiniatureBuilding,{level,district,color:"#8973ca"}));
+    assert.equal(renderLevel(0), "", "undeveloped property has no structure");
+    for (const level of [1,2,3]) assert.equal((renderLevel(level).match(/class="mini-structure"/g)||[]).length,level);
+    assert.match(renderLevel(4),/data-height="43"/);
+    assert.match(renderLevel(5),new RegExp(ui.architecture[district].landmark));
+    assert.match(renderLevel(5),new RegExp(`architecture-${district}`));
+  }
 });

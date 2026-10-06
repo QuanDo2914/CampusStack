@@ -163,3 +163,40 @@ Surface polygons paint below all labels and hit targets, so neighboring faces
 cannot hide final letters. Property print follows the other projected square
 axis, retaining a readable icon/text grid and separating adjacent name lanes.
 The final audit includes text/price/icon-to-text collisions as well as markers.
+
+
+## District miniature and physical-piece polish (PR #2)
+
+- Preserved the approved 2:1 isometric diamond/slab geometry. Added reusable
+  district architectures and six clear development silhouettes, with a DEV-only
+  one-property Level 0–5 showcase completed before applying the system broadly.
+- Character pieces now have thick colored bases, pedestals and contact shadows.
+  Responsive deterministic placement protects every neighboring label/icon and
+  keeps pawn and miniature feet on their actual tile. Shared pawns fan cleanly.
+- Corners use kind-driven original miniature scenes; the quad gains restrained
+  benches/lamp detail. Ownership is a colored band with a subtle complete-group
+  highlight; mortgaged development is dimmed. The active quad panel is compact;
+  the separate right rail remains expandable. Confirmed dice have depth and a
+  tumble/bounce/settle sequence; no client-selected results were introduced.
+- All **65 Node tests pass**, including existing bot, authorization, transaction,
+  game and UI tests. Added a regression for every district's six model states.
+  The initial new test caught React 19 rendering an SVG title with multiple
+  children as empty; a single-string title fixed it. No outstanding failures.
+- TypeScript (`tsc -b`) and Vite production build pass.
+- Exact 1366×768, 1440×900, 1536×864 and 1920×1080, DPR 1 / 100% zoom:
+  all 40 spaces / 160 pieces pass the crowded visual audit, including glyph
+  overflow, adjacent text/icon/price collisions, miniature/pawn collisions,
+  on-tile feet and unresolved placement. Full-scene fixtures have no horizontal
+  or vertical page overflow; board and primary action are wholly visible.
+- Browser smoke on an isolated local bot server: created Visual QA + two bots,
+  started, rolled a confirmed 6+1, moved to Campus Gym, bought it for $160,
+  ended turn, and observed bot purchases and return to the human turn. DOM
+  placement reported zero unresolved objects and correct actual-tile labels.
+- Captured showcase and full-board fixture screenshots at 1366×768, 1440×900
+  and 1920×1080, plus a live local bot match. Fixture screenshots are read-only
+  presentation examples, not multiplayer state. Stress packing may take a few
+  seconds; normal live rooms have at most four pawns in total.
+- Scope: frontend presentation, DEV fixtures, UI regression test and docs only.
+  Supabase, migrations, RPCs, Edge Functions, room/session code, authoritative
+  board data, economics, bot logic and game rules are unchanged. No production
+  deployment, main merge or Vercel reconnection.

@@ -1,0 +1,438 @@
+/* Shared virtual light: upper-left. Dark right walls, small ground shadows. */
+.development-showcase {
+  min-height: 100vh;
+  background: #eef1e6;
+  color: #204537;
+  padding: 32px;
+}
+.development-showcase header {
+  display: flex;
+  gap: 24px;
+  font-weight: 700;
+}
+.development-showcase h1 {
+  font-size: 32px;
+  margin: 40px 0 12px;
+}
+.development-showcase label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+.development-showcase select {
+  padding: 10px;
+  border: 1px solid #aabca3;
+  border-radius: 8px;
+  background: #fffaf0;
+}
+.development-levels {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(140px, 1fr));
+  gap: 18px;
+  margin: 32px 0;
+}
+.development-levels article {
+  padding: 12px;
+  border: 1px solid #ccd7c2;
+  border-radius: 18px;
+  background: #f8faef;
+  text-align: center;
+}
+.development-levels article > span {
+  display: block;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.showcase-space {
+  position: relative;
+  height: 200px;
+}
+.showcase-tile {
+  width: 100%;
+  height: 200px;
+}
+.showcase-building {
+  position: absolute;
+  width: 105px;
+  height: 116px;
+  bottom: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.showcase-building svg {
+  width: 100%;
+  height: 100%;
+}
+.showcase-note {
+  max-width: 800px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+/* Pieces have freestanding silhouettes and colored, thick plinths, not avatar circles. */
+.tabletop-token,
+.tabletop-token.token-small {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  width: 42px;
+  height: 55px;
+}
+.tabletop-token svg {
+  border-radius: 0;
+  overflow: visible;
+}
+.tabletop-app .tabletop-toolbar {
+  height: 26px;
+  margin-bottom: 10px;
+}
+.match-caption {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #59785f;
+}
+.tabletop-app {
+  --scene-height: calc(100dvh - 165px);
+}
+.diamond-board .tile-title {
+  color: #193d31;
+}
+.diamond-board .tile-copy small {
+  color: #4d6755;
+}
+.diamond-surface .district-edge {
+  stroke-width: 6;
+}
+.diamond-surface .owner-edge {
+  stroke-width: 7;
+}
+.diamond-surface .kind-fee .tile-rim {
+  fill: #f4dfb9;
+}
+.diamond-surface .kind-event .tile-rim {
+  fill: #e8daf2;
+}
+.diamond-surface .kind-start .tile-rim {
+  fill: #cee6c5;
+}
+.diamond-board .corner-face {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+.diamond-board .corner-face .corner-emblem {
+  display: none;
+}
+/* Primary interaction floats over the open quad; rail remains separate. */
+.quad-action-stage.tabletop-stage.campus-center {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: 260px !important;
+  max-width: 260px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 12px 16px !important;
+  border-radius: 18px;
+  background: #fffaf0ed;
+  box-shadow:
+    0 4px 0 #c2cdb3,
+    0 7px 8px #23493218;
+}
+.quad-action-stage .turn-pill {
+  margin: 0 0 4px;
+  gap: 8px;
+}
+.quad-action-stage .turn-pill > .tabletop-token {
+  width: 27px !important;
+  height: 35px !important;
+}
+.quad-action-stage .turn-identity strong {
+  font-size: 15px;
+}
+.quad-action-stage .turn-identity small {
+  font-size: 9px;
+}
+.quad-action-stage .stage-clock {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+}
+.quad-action-stage .campus-turn h2 {
+  font-size: 16px;
+  margin: 5px 0;
+}
+.quad-action-stage .campus-turn > p {
+  display: none;
+}
+.quad-action-stage .primary {
+  font-size: 12px;
+  padding: 9px 12px;
+  min-width: 0;
+}
+.quad-action-stage .center-tools {
+  display: flex;
+  margin-top: 8px;
+  padding-top: 6px;
+  gap: 4px;
+}
+.quad-action-stage .center-tools button {
+  font-size: 9px;
+  padding: 4px;
+}
+.quad-action-stage .spectator-note {
+  font-size: 10px;
+  margin: 4px 0;
+}
+.quad-action-stage .physical-dice.campus-dice {
+  margin: 5px 0 10px;
+  gap: 12px;
+}
+.quad-action-stage .physical-dice .pip-die {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+}
+.quad-action-stage .physical-dice .pip {
+  width: 5px;
+  height: 5px;
+}
+.quad-action-stage .dice-total {
+  font-size: 18px;
+}
+.quad-action-stage .deed-offer-values {
+  margin: 8px 0;
+}
+.quad-action-stage .stage-deed h2 {
+  font-size: 16px;
+}
+.quad-action-stage .action-row {
+  gap: 6px;
+}
+.tabletop-side-dock {
+  padding-top: 32px;
+}
+.tabletop-side-dock .rail-player-summary > .tabletop-token {
+  width: 28px;
+  height: 37px;
+}
+
+/* Ground anchors: fractions of the same projected tile polygon used for hits.
+   The shared placement hook refines these preferred lanes against live glyphs. */
+.diamond-board .isometric-tile {
+  --label-inset: -16px;
+}
+.diamond-board .tile-buildings {
+  --mw: min(
+    clamp(24px, 1.9vw, 34px),
+    calc(14px + var(--corner-distance) * 6px)
+  );
+  --mh: calc(var(--mw) * 1.1);
+  width: var(--mw) !important;
+  height: var(--mh) !important;
+  transform: translate(-50%, -100%) !important;
+}
+.diamond-board .tile-buildings svg.campus-miniature {
+  width: 100% !important;
+  height: 100% !important;
+}
+.diamond-board [data-edge="top"] .tile-buildings {
+  left: -8%;
+  top: 110%;
+}
+.diamond-board [data-edge="left"] .tile-buildings {
+  left: 108%;
+  top: 110%;
+}
+.diamond-board [data-edge="right"] .tile-buildings {
+  left: 25%;
+  top: -30%;
+}
+.diamond-board [data-edge="bottom"] .tile-buildings {
+  left: 75%;
+  top: -30%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="top"] .tile-buildings {
+  left: 40%;
+  top: 130%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="left"] .tile-buildings {
+  left: 78%;
+  top: 120%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="right"] .tile-buildings {
+  left: 15%;
+  top: -14%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="bottom"] .tile-buildings {
+  left: 85%;
+  top: -16%;
+}
+.diamond-board [data-edge="top"] .campus-tokens {
+  left: 25%;
+  top: 132%;
+}
+.diamond-board [data-edge="left"] .campus-tokens {
+  left: 75%;
+  top: 132%;
+}
+.diamond-board [data-edge="right"] .campus-tokens {
+  left: -5%;
+  top: 0%;
+}
+.diamond-board [data-edge="bottom"] .campus-tokens {
+  left: 105%;
+  top: 0%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="top"] .campus-tokens {
+  left: 2%;
+  top: 108%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="left"] .campus-tokens {
+  left: 113%;
+  top: 100%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="right"] .campus-tokens {
+  left: -4%;
+  top: 0%;
+}
+.diamond-board [data-corner-distance="1"][data-edge="bottom"] .campus-tokens {
+  left: 98%;
+  top: -8%;
+}
+.diamond-board .piece-position {
+  --step: 7px;
+  top: auto;
+  bottom: 0;
+  height: 24px;
+}
+.diamond-board [data-edge] .piece-position {
+  transform: translate(
+    calc(-50% + var(--fan) * var(--step)),
+    calc(var(--fan) * var(--step) / 2)
+  );
+}
+.diamond-board [data-edge="left"] .piece-position,
+.diamond-board [data-edge="right"] .piece-position {
+  transform: translate(
+    calc(-50% + var(--fan) * var(--step)),
+    calc(var(--fan) * var(--step) / -2)
+  );
+}
+.diamond-board .piece-position .tabletop-token {
+  display: block;
+  width: 18px !important;
+  height: 24px !important;
+}
+.diamond-board [data-occupants="4"] .piece-position .tabletop-token {
+  width: 14px !important;
+  height: 19px !important;
+}
+.diamond-board [data-corner-distance="1"] .piece-position,
+.diamond-board [data-corner] .piece-position {
+  --step: 3px;
+}
+/* Original landmark scenes and printed captions, with no attached UI signs. */
+.diamond-board .corner-monument {
+  width: 25px;
+  height: 25px;
+}
+.diamond-board [data-corner] .corner-monument {
+  left: calc(50% - 16px);
+  top: calc(50% - 26px);
+  right: auto;
+  bottom: auto;
+}
+.diamond-board [data-corner="10"] .corner-monument {
+  top: calc(50% - 34px);
+}
+.diamond-board [data-corner="20"] .corner-monument {
+  top: calc(50% - 31px);
+}
+.diamond-board [data-corner="30"] .corner-monument {
+  left: calc(50% - 26px);
+  top: calc(50% - 31px);
+}
+.diamond-board [data-corner] .corner-face {
+  left: 50%;
+  top: calc(50% + 23px);
+  width: 55px;
+}
+.diamond-board [data-corner="0"] .corner-face {
+  left: calc(50% - 20px);
+}
+.diamond-board [data-corner="20"] .corner-face {
+  left: calc(50% + 20px);
+}
+.diamond-board [data-corner="10"] .corner-face {
+  top: calc(50% - 40px);
+}
+.diamond-board [data-corner="0"] .campus-tokens {
+  left: 80%;
+  top: 50%;
+}
+.diamond-board [data-corner="10"] .campus-tokens {
+  left: 50%;
+  top: 75%;
+}
+.diamond-board [data-corner="20"] .campus-tokens {
+  left: 30%;
+  top: 65%;
+}
+.diamond-board [data-corner="30"] .campus-tokens {
+  left: 40%;
+  top: 25%;
+}
+.diamond-board .mortgaged .tile-face,
+.diamond-board .mortgaged .campus-miniature {
+  opacity: 0.55;
+}
+.diamond-board .set-complete .diamond-tile-face .tile-rim {
+  fill: #f7e7b320;
+  stroke: var(--owner);
+  stroke-width: 1;
+}
+/* Dice animate only a confirmed snapshot result; pending requests are inert. */
+.physical-dice .pip-die {
+  position: relative;
+  box-shadow:
+    inset 2px 2px 0 #fff,
+    inset -2px -3px 0 #e5dbbe,
+    3px 5px 0 #c5b795,
+    4px 7px 0 #998e74,
+    5px 9px 3px #26463133;
+}
+.physical-dice.rolling .pip-die {
+  animation: confirmed-dice-settle 0.72s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.physical-dice.rolling .pip-die:nth-child(2) {
+  animation: confirmed-dice-settle 0.72s cubic-bezier(0.2, 0.7, 0.3, 1) 0.06s;
+}
+@keyframes confirmed-dice-settle {
+  0% {
+    transform: translateY(-16px) rotate(-28deg) rotateX(42deg);
+  }
+  35% {
+    transform: translateY(4px) rotate(20deg) rotateY(-24deg);
+  }
+  60% {
+    transform: translateY(-7px) rotate(-10deg);
+  }
+  82% {
+    transform: translateY(2px) rotate(4deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .physical-dice.rolling .pip-die,
+  .physical-dice.rolling .pip-die:nth-child(2) {
+    animation: none;
+  }
+}
