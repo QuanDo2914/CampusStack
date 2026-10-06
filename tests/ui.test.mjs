@@ -191,6 +191,13 @@ test("tabletop preserves full accessible tile names, shared occupants, mortgages
   assert.ok(!html.includes("FLY ANYWHERE"));
   assert.match(html, /Mortgaged/);
   assert.match(html, /rail-compact-meta/);
+  assert.match(html, /Student Apts/);
+  assert.match(html, /Observatory/);
+  assert.equal(
+    (html.match(/data-edge="(top|bottom|left|right)"/g) || []).length,
+    40,
+  );
+  assert.equal((html.match(/class="tile-title"/g) || []).length, 40);
   assert.equal((html.match(/data-testid="space-/g) || []).length, 40);
   assert.ok(
     !html.includes("board-character"),

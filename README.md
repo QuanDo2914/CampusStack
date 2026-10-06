@@ -207,3 +207,18 @@ Corner artwork now uses a presentation-only `CornerTile` composition accepting a
 emblem, label and optional subtitle. Retheming those visual inputs does not alter
 board data or action handling. The compact score rail shows assets and turn status
 at a glance; expand a player to inspect sets, Transit, mortgages and achievements.
+
+### Tile layout audit (development only)
+
+With the local preview running, open `/__dev/tiles` (for example,
+`http://localhost:5180/__dev/tiles`). It renders all 40 real BoardTile components
+with ownership, mortgage and development fixtures, without connecting to the game
+server or touching your room. Toggle four pieces on every space to stress token
+anchors. The report flags title/subtitle overflow, titles over two lines, and
+piece/building/owner/lock collisions with any tile's text or primary icon.
+
+TileLabel measures available width/height and fits titles between 9.5–12px; the
+price remains 9px on its own line. Board-only display labels live in
+`src/components/tabletop/displayNames.ts`; authoritative names remain unchanged
+in board data, accessible tile names and deeds. The audit module is omitted from
+production JavaScript.

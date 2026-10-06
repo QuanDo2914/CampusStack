@@ -2106,3 +2106,240 @@
   line-height: 1.4;
   margin-top: 6px;
 }
+
+/* Shared tile content grid; pieces/development live on separate edge anchors. */
+.tabletop-plane.campus-board {
+  gap: 3px;
+}
+.tabletop-tile.campus-space,
+.tabletop-tile.campus-space.corner {
+  display: block;
+  padding: 0 3px !important;
+  border-top-width: 2px;
+  container-type: inline-size;
+}
+.tile-face,
+.corner-face {
+  display: grid;
+  grid-template-columns: clamp(14px, 21cqi, 26px) minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.tile-emblem,
+.corner-emblem {
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  color: var(--group);
+}
+.tile-emblem .campus-sticker,
+.corner-emblem .campus-sticker {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  stroke-width: 3;
+}
+.tabletop-tile .tile-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  container-type: inline-size;
+}
+.tabletop-tile .tile-title {
+  font-size: clamp(9.5px, 20cqi, 12px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-align: left;
+}
+.tabletop-tile .tile-copy small {
+  font-size: 9px;
+  line-height: 1.05;
+  letter-spacing: 0;
+  padding-top: 1px;
+  white-space: nowrap;
+}
+.tabletop-tile.occupied .tile-copy {
+  opacity: 1;
+}
+.tabletop-tile .campus-tokens {
+  inset: auto;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.tabletop-tile .piece-position {
+  bottom: auto;
+  left: auto;
+  transform: none;
+}
+.tabletop-tile .piece-position .tabletop-token {
+  width: 28px;
+  height: 30px;
+}
+.tabletop-tile[data-edge="top"] .campus-tokens {
+  top: -17px;
+  left: 50%;
+}
+.tabletop-tile[data-edge="bottom"] .campus-tokens {
+  top: calc(100% + 17px);
+  left: 50%;
+}
+.tabletop-tile[data-edge="left"] .campus-tokens {
+  left: -18px;
+  top: 50%;
+}
+.tabletop-tile[data-edge="right"] .campus-tokens {
+  left: calc(100% + 18px);
+  top: 50%;
+}
+.tabletop-tile[data-edge="top"] .piece-position,
+.tabletop-tile[data-edge="bottom"] .piece-position {
+  transform: translate(calc(-50% + var(--fan) * 16px), -50%);
+}
+.tabletop-tile[data-edge="left"] .piece-position,
+.tabletop-tile[data-edge="right"] .piece-position {
+  transform: translate(-50%, calc(-50% + var(--fan) * 16px));
+}
+.tabletop-tile .tile-owner {
+  height: 3px;
+  left: 1px;
+  right: 1px;
+  bottom: -1px;
+}
+.tabletop-tile .tile-owner > span {
+  bottom: auto;
+  right: auto;
+}
+.tabletop-tile .tile-buildings {
+  top: auto;
+  right: auto;
+}
+.tabletop-tile[data-edge="top"] .tile-buildings {
+  top: calc(100% + 2px);
+  left: 4px;
+}
+.tabletop-tile[data-edge="bottom"] .tile-buildings {
+  bottom: calc(100% + 2px);
+  left: 4px;
+}
+.tabletop-tile[data-edge="left"] .tile-buildings {
+  left: calc(100% + 3px);
+  top: 0;
+}
+.tabletop-tile[data-edge="right"] .tile-buildings {
+  right: calc(100% + 3px);
+  top: 0;
+}
+.tabletop-tile[data-edge="top"] .tile-owner > span {
+  top: 5px;
+  right: -1px;
+}
+.tabletop-tile[data-edge="bottom"] .tile-owner > span {
+  bottom: calc(100% + 34px);
+  right: -1px;
+}
+.tabletop-tile[data-edge="left"] .tile-owner > span {
+  left: calc(100% + 4px);
+  bottom: 7px;
+}
+.tabletop-tile[data-edge="right"] .tile-owner > span {
+  right: calc(100% + 4px);
+  bottom: 7px;
+}
+.tabletop-tile .mortgage-lock {
+  top: auto;
+  bottom: -14px;
+  right: 2px;
+  width: 10px;
+  height: 12px;
+}
+.tile-lab-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 54px;
+  font-size: 12px;
+}
+.tile-lab-tools label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tile-lab-tools input {
+  width: auto;
+}
+.tile-lab-report {
+  max-height: 250px;
+  overflow: auto;
+  padding: 12px;
+  font-size: 11px;
+  background: #fffdf4;
+  border-radius: 12px;
+}
+.tile-lab-report[data-pass="false"] {
+  border: 2px solid #bb6454;
+}
+.tile-lab-report[data-pass="true"] {
+  border: 2px solid #729567;
+}
+.tabletop-tile .piece-position {
+  left: 0;
+  top: 0;
+  right: auto;
+  bottom: auto;
+}
+.tabletop-tile.mortgaged .tile-copy small {
+  font-size: 9px;
+  letter-spacing: 0;
+}
+.tile-lab .app-header h1 {
+  font-size: 18px;
+}
+.tile-owner-marker {
+  position: absolute;
+  width: 16px;
+  height: 17px;
+  z-index: 4;
+}
+.tile-owner-marker .tabletop-token.token-small {
+  width: 16px;
+  height: 17px;
+  border-width: 1.5px;
+  box-shadow:
+    0 2px 0 var(--owner),
+    0 4px 3px #294b3325;
+}
+.tabletop-tile[data-edge="top"] .tile-owner-marker {
+  top: calc(100% + 5px);
+  right: 0;
+}
+.tabletop-tile[data-edge="bottom"] .tile-owner-marker {
+  bottom: calc(100% + 5px);
+  right: 0;
+}
+.tabletop-tile[data-edge="left"] .tile-owner-marker {
+  left: calc(100% + 5px);
+  bottom: 0;
+}
+.tabletop-tile[data-edge="right"] .tile-owner-marker {
+  right: calc(100% + 5px);
+  bottom: 0;
+}
+/* Reclaim interior gutters, not outer board space, for three readable text rows. */
+.tabletop-plane.campus-board {
+  padding: 8px;
+  gap: 2px;
+}
+.tabletop-tile.campus-space,
+.tabletop-tile.campus-space.corner {
+  border-top-width: 1px;
+}

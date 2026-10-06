@@ -1,51 +1,11 @@
+import { TileLabel } from "./TileLabel";
+import { tileDisplayNames } from "./displayNames";
 import { CornerTile } from "./CornerTile";
 import { CampusIcon } from "./CampusIcon";
 import { PlayerToken } from "./PlayerToken";
 import { campusBoard, groups, tilePosition } from "../../lib/expanded";
 import { colors, money } from "../../lib/board";
 import type { Snapshot, Player } from "../../types/game";
-const shortNames = [
-  "START",
-  "Eng. Café",
-  "Green St.",
-  "Bulletin",
-  "Library Café",
-  "West Station",
-  "Bike Hub",
-  "Campus Gym",
-  "Lab Fee",
-  "Rec Center",
-  "AIRPORT",
-  "Art Studio",
-  "Music Hall",
-  "News",
-  "Cinema",
-  "North Station",
-  "Apartments",
-  "Study Quad",
-  "Parking",
-  "Grad Lofts",
-  "GO TO JAIL",
-  "Science",
-  "Bio Lab",
-  "Research",
-  "Observatory",
-  "East Station",
-  "Innovation",
-  "Makerspace",
-  "Club Fee",
-  "Tech Park",
-  "JAIL / VISIT",
-  "Union",
-  "Market",
-  "Quad Cards",
-  "Alumni Hall",
-  "South Station",
-  "Gardens",
-  "Solar Lab",
-  "Alumni News",
-  "Eco Center",
-];
 export function BoardTile({
   index,
   snapshot,
@@ -65,37 +25,38 @@ export function BoardTile({
     [col, row] = tilePosition(index),
     a = snapshot.assets?.[index],
     owner = snapshot.players.find((p) => p.id === a?.owner);
+  const edge =
+    row === 1 ? "top" : row === 11 ? "bottom" : col === 1 ? "left" : "right";
   const set =
     b.kind === "property" &&
     owner &&
     campusBoard
       .filter((x) => x.category === b.category)
       .every((x) => snapshot.assets?.[x.index]?.owner === owner.id);
-  const subtitle = a?.mortgaged
-    ? "Mortgaged"
-    : b.price
-      ? money(b.price)
-      : b.kind === "start"
-        ? "+$100"
-        : b.kind === "fee"
-          ? `−${money(b.fee)}`
-          : b.kind === "event"
-            ? "Draw card"
-            : b.kind === "airport"
-              ? "Fast Travel"
-              : b.kind === "jail"
-                ? "Just visiting"
-                : b.kind === "go_to_jail"
-                  ? "Campus security"
-                  : b.kind === "parking"
-                    ? "Take a break"
-                    : "";
+  const subtitle = b.price
+    ? money(b.price)
+    : b.kind === "start"
+      ? "+$100"
+      : b.kind === "fee"
+        ? `−${money(b.fee)}`
+        : b.kind === "event"
+          ? "Draw"
+          : b.kind === "airport"
+            ? "Fast Travel"
+            : b.kind === "jail"
+              ? "Visiting"
+              : b.kind === "go_to_jail"
+                ? "Security"
+                : b.kind === "parking"
+                  ? "Rest"
+                  : "";
   const emblem = (
     <CampusIcon kind={b.kind} category={b.category} name={b.name} />
   );
   return (
     <button
       data-testid={`space-${index}`}
+      data-edge={edge}
       className={`campus-space tabletop-tile kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${owner ? "owned" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
       style={
         {
@@ -115,27 +76,26 @@ export function BoardTile({
       {index % 10 === 0 ? (
         <CornerTile
           emblem={emblem}
-          label={shortNames[index]}
+          label={tileDisplayNames[index]}
           subtitle={subtitle}
         />
       ) : (
+        <span className="tile-face">
+          <span className="tile-emblem">{emblem}</span>
+          <TileLabel label={tileDisplayNames[index]} subtitle={subtitle} />
+        </span>
+      )}
+      {owner && (
         <>
-          {emblem}
-          <span className="tile-copy">
-            <strong>{shortNames[index]}</strong>
-            {subtitle && <small>{subtitle}</small>}
+          <span className="tile-owner" aria-hidden="true" />
+          <span className="tile-owner-marker" title={`Owned by ${owner.name}`}>
+            <PlayerToken player={owner} compact />
           </span>
         </>
       )}
-      {owner && (
-        <span className="tile-owner" title={`Owned by ${owner.name}`}>
-          <span>
-            <PlayerToken player={owner} compact />
-          </span>
-        </span>
-      )}
       {a?.mortgaged && (
         <svg className="mortgage-lock" viewBox="0 0 20 24" aria-hidden="true">
+          <title>Mortgaged</title>
           <path d="M5 10V6a5 5 0 0 1 10 0v4M3 10h14v12H3Z" />
           <path d="M10 15v3" />
         </svg>

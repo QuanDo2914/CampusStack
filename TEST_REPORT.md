@@ -111,3 +111,25 @@ complex dialogs scroll within their own panels. No main merge or production depl
 - No rules, board data/order, Supabase schema/RPC, bot logic or victory evaluator
   changes. No merge or production deployment. Dense event choices/dialogs retain
   their existing scrolling behavior; portrait mobile remains out of scope.
+
+## Shared tile typography and marker zones
+
+- All 40 spaces use a reusable icon/text grid and shared TileLabel: natural wrapping
+  to two lines, measured title fitting in a narrow 9.5–12px range, no ellipsis,
+  clipping or horizontal scaling. Prices stay 9px on a separate line, including
+  mortgaged properties. Student Apts is a board-only label; Observatory remains
+  unabbreviated and all authoritative names/deeds remain unchanged.
+- Pieces fan along outward edge anchors; owner badges and development sit toward
+  the quad. Interior gutters were tightened to reclaim text height while keeping
+  the approved outer board dimensions/perspective and whitespace intact.
+- Added development-only `/__dev/tiles` fixture/report covering all 40 spaces,
+  mortgage/development/ownership states and one/four pieces per space. Geometry
+  checks flag name width/height, subtitle overflow and markers crossing any tile's
+  text/icon. It makes no game/server/session requests.
+- Cross-tile audit at exact 1366×768, 1440×900 and 1920×1080 viewports (DPR 1):
+  40 spaces, 160 pieces, zero text/marker failures. Observatory title measured
+  9.77px, 10.59px and 12px respectively. Live match screenshots at each size show
+  all tiles/pieces inside the viewport and no page overflow.
+- All 63 Node tests pass; TypeScript/production build pass. Production JavaScript
+  contains no tile-lab fixture/UI strings. Presentation changes only; no engine,
+  authoritative board data, Supabase/RPC or bot changes. No merge or deployment.

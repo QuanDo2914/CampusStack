@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { TileLabel } from "./TileLabel";
 
 // Presentation-only composition: labels and emblem come from the board renderer.
 // Future themes can replace the supplied artwork/copy without changing this tile.
@@ -16,10 +17,7 @@ export function CornerTile({
       <span className="corner-emblem" aria-hidden="true">
         {emblem}
       </span>
-      <span className="tile-copy">
-        <strong>{label}</strong>
-        {subtitle && <small>{subtitle}</small>}
-      </span>
+      <TileLabel label={label} subtitle={subtitle} />
     </span>
   );
 }
