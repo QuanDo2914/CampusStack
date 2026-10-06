@@ -436,3 +436,61 @@
     animation: none;
   }
 }
+
+
+/* Camera/readability correction preview: equal-scale orthographic diamond.
+   Only the surface projection changes; text and standing toys stay upright. */
+.tabletop-app { --scene-height: calc(100dvh - 132px); }
+.tabletop-app .expanded-layout { grid-template-columns: minmax(0, 1fr) 224px; gap: 20px; }
+.diamond-board {
+  width: min(100%, calc((var(--scene-height) - 50px) * 1.8));
+  aspect-ratio: 1.8;
+  top: 48%;
+}
+.diamond-scenery { filter: saturate(1.2) contrast(1.04); }
+.diamond-surface { filter: saturate(1.18); }
+.diamond-board .tile-face {
+  display: block;
+  width: 96%;
+  transform: translate(-50%, -50%) !important;
+  --label-inset: 0px;
+}
+.diamond-board .tile-face .tile-emblem {
+  position: absolute;
+  left: 0;
+  top: auto;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+}
+.diamond-board .tile-face .tile-emblem .campus-sticker { width: 12px; height: 12px; }
+.diamond-board .tile-copy { width: 100%; }
+.diamond-board .tile-title { line-height: 1.1; letter-spacing: -.015em; color: #153d2e; }
+.diamond-board .tile-face .tile-copy small { padding-left: 16px; font-size: 10px; line-height: 1.2; color: #375745; }
+.diamond-board .isometric-tile { --label-inset: 0px; }
+.diamond-board [data-edge="top"] .tile-face { left: 50%; top: 48%; }
+.diamond-board [data-edge="left"] .tile-face { left: 50%; top: 48%; }
+.diamond-board [data-edge="right"] .tile-face { left: 50%; top: 48%; }
+.diamond-board [data-edge="bottom"] .tile-face { left: 50%; top: 48%; }
+.diamond-board .tile-buildings {
+  --mw: clamp(36px, 3vw, 52px);
+  --mh: calc(var(--mw) * 1.1);
+  filter: saturate(1.3) contrast(1.08) drop-shadow(1px 3px 1px #183f2c35);
+}
+.diamond-board .piece-position { height: 37px; --step: 10px; }
+.diamond-board .piece-position .tabletop-token { width: 28px !important; height: 37px !important; }
+.diamond-board [data-occupants="4"] .piece-position .tabletop-token { width: 24px !important; height: 32px !important; }
+.diamond-board .corner-monument { width: 40px; height: 44px; filter: saturate(1.25) contrast(1.08); }
+.diamond-board [data-corner] .corner-face { width: 74px; }
+.quad-action-stage.tabletop-stage.campus-center {
+  width: 208px !important;
+  max-width: 208px;
+  max-height: 210px;
+  padding: 8px 12px !important;
+  border-radius: 14px;
+}
+.quad-action-stage .campus-turn h2 { font-size: 14px; margin: 3px 0; }
+.quad-action-stage .physical-dice.campus-dice { margin: 3px 0 5px; gap: 9px; }
+.quad-action-stage .physical-dice .pip-die { width: 32px; height: 32px; padding: 6px; }
+.quad-action-stage .center-tools { margin-top: 5px; padding-top: 4px; }
+.tabletop-side-dock { padding-top: 20px; }

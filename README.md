@@ -275,3 +275,11 @@ Open `http://localhost:5181/`, select **VS COMPUTER — TEST MODE** beneath
 the home cards, enter a name and create the test room. Choose a character in
 its lobby and start. The backend is ephemeral local test storage; this does
 not update hosted Supabase. Normal turn timers still run when bots are paused.
+
+### 36-space approval studies
+
+`/__dev/style-checkpoints` contains seven isolated approval studies: district,
+ownership, typography/specials, development, premium pair, corners and four
+shared pawns. The proposal lives only in DEV metadata and
+`docs/BOARD_36_PROPOSAL.md`; authoritative v1/v2 data remains unchanged.
+Approve the proposed layout/economics and art direction before v3 conversion.

@@ -4,7 +4,7 @@ import { useId } from "react";
 export function DiamondScenery() {
   const id = useId();
   return (
-    <svg className="diamond-scenery" viewBox="0 0 1000 500" aria-hidden="true">
+    <svg className="diamond-scenery" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id={`${id}-quad-grass`} x2=".8" y2="1">
           <stop stopColor="#cfdeae" />

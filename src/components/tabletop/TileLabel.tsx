@@ -19,13 +19,15 @@ export function TileLabel({
     if (!context) return;
     const fit = () => {
       const style = getComputedStyle(element);
-      const max = innerWidth >= 1700 ? 12 : 11;
+      const diamond = !!element.closest(".diamond-board");
+      const max = diamond ? (innerWidth >= 1700 ? 14 : 13) : (innerWidth >= 1700 ? 12 : 11);
+      const min = diamond ? 11.5 : 9.5;
       context.font = `750 ${max}px ${style.fontFamily}`;
       const widest = Math.max(
         ...label.split(/\s+/).map((word) => context.measureText(word).width),
       );
       const width = element.clientWidth - 1;
-      const widthSize = Math.min(max, Math.max(9.5, (max * width) / widest));
+      const widthSize = Math.min(max, Math.max(min, (max * width) / widest));
       context.font = `750 ${widthSize}px ${style.fontFamily}`;
       let lines = 1,
         line = "";
@@ -40,7 +42,7 @@ export function TileLabel({
       const titleHeight = tile.clientHeight - 3 - (subtitle ? 10.5 : 0);
       const fitted = Math.min(
         widthSize,
-        Math.max(9.5, titleHeight / Math.min(2, lines) / 1.05),
+        Math.max(min, titleHeight / Math.min(2, lines) / 1.05),
       );
       setSize(Math.round(fitted * 100) / 100);
     };

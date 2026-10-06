@@ -200,3 +200,24 @@ The final audit includes text/price/icon-to-text collisions as well as markers.
   Supabase, migrations, RPCs, Edge Functions, room/session code, authoritative
   board data, economics, bot logic and game rules are unchanged. No production
   deployment, main merge or Vercel reconnection.
+
+## 36-space proposal and approval checkpoints (pending approval)
+
+- Added DEV-only A–G style studies and a numbered proposal document. Exactly
+  six adjacent three-property districts and two adjacent premium pairs on the
+  final side; 36 unique retained spaces, four corners and four Transit locations.
+- New proposal tests validate counts, retained/removal mapping, side adjacency,
+  premium positions, distinct colors and increasing purchase/development/rent
+  ceilings. All 67 unit/bot/game/UI/proposal tests pass; TypeScript/build pass.
+- Browser studies checked at 1366×768, 1440×900, 1536×864 and 1920×1080: no
+  horizontal overflow, over-two-line titles, title-width overflow, or overlap
+  between printed text and reserved building/pawn zones. Captured all seven
+  approval screenshots at 1440×900. These enlarged studies do not establish
+  final full-board-scale fitting or actual SVG paint collision coverage.
+- Camera correction from the preceding preview remains the baseline. The new
+  art/color/ownership studies affect no real room. Production/gameplay board
+  remains 40 spaces for v2, with legacy v1 preserved. No v3 gameplay/migration
+  has been implemented, so 35→0 and other new board-version tests are pending
+  approval and conversion. The current 40-space regression fixture is retained.
+- Documented movement/corner/Transit/event/victory/version assumptions and a
+  safe v3 path. No hosted changes, deployment, Vercel reconnection or merge.
