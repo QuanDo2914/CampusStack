@@ -210,3 +210,5 @@
 }
 .diamond-board .tile-face,.diamond-board .corner-face { pointer-events:auto; cursor:pointer; }
 .choosing-destination .isometric-tile .diamond-tile-face .tile-rim { stroke:#71aa98; stroke-width:3; }
+.diamond-board .corner-face .tile-copy .tile-title { color:#21493e; }
+.diamond-board .corner-face .corner-emblem { color:#4f8b73; }
