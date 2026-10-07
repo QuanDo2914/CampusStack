@@ -163,3 +163,84 @@ Surface polygons paint below all labels and hit targets, so neighboring faces
 cannot hide final letters. Property print follows the other projected square
 axis, retaining a readable icon/text grid and separating adjacent name lanes.
 The final audit includes text/price/icon-to-text collisions as well as markers.
+
+
+## District miniature and physical-piece polish (PR #2)
+
+- Preserved the approved 2:1 isometric diamond/slab geometry. Added reusable
+  district architectures and six clear development silhouettes, with a DEV-only
+  one-property Level 0–5 showcase completed before applying the system broadly.
+- Character pieces now have thick colored bases, pedestals and contact shadows.
+  Responsive deterministic placement protects every neighboring label/icon and
+  keeps pawn and miniature feet on their actual tile. Shared pawns fan cleanly.
+- Corners use kind-driven original miniature scenes; the quad gains restrained
+  benches/lamp detail. Ownership is a colored band with a subtle complete-group
+  highlight; mortgaged development is dimmed. The active quad panel is compact;
+  the separate right rail remains expandable. Confirmed dice have depth and a
+  tumble/bounce/settle sequence; no client-selected results were introduced.
+- All **65 Node tests pass**, including existing bot, authorization, transaction,
+  game and UI tests. Added a regression for every district's six model states.
+  The initial new test caught React 19 rendering an SVG title with multiple
+  children as empty; a single-string title fixed it. No outstanding failures.
+- TypeScript (`tsc -b`) and Vite production build pass.
+- Exact 1366×768, 1440×900, 1536×864 and 1920×1080, DPR 1 / 100% zoom:
+  all 40 spaces / 160 pieces pass the crowded visual audit, including glyph
+  overflow, adjacent text/icon/price collisions, miniature/pawn collisions,
+  on-tile feet and unresolved placement. Full-scene fixtures have no horizontal
+  or vertical page overflow; board and primary action are wholly visible.
+- Browser smoke on an isolated local bot server: created Visual QA + two bots,
+  started, rolled a confirmed 6+1, moved to Campus Gym, bought it for $160,
+  ended turn, and observed bot purchases and return to the human turn. DOM
+  placement reported zero unresolved objects and correct actual-tile labels.
+- Captured showcase and full-board fixture screenshots at 1366×768, 1440×900
+  and 1920×1080, plus a live local bot match. Fixture screenshots are read-only
+  presentation examples, not multiplayer state. Stress packing may take a few
+  seconds; normal live rooms have at most four pawns in total.
+- Scope: frontend presentation, DEV fixtures, UI regression test and docs only.
+  Supabase, migrations, RPCs, Edge Functions, room/session code, authoritative
+  board data, economics, bot logic and game rules are unchanged. No production
+  deployment, main merge or Vercel reconnection.
+
+## 36-space proposal and approval checkpoints (pending approval)
+
+- Added DEV-only A–G style studies and a numbered proposal document. Exactly
+  six adjacent three-property districts and two adjacent premium pairs on the
+  final side; 36 unique retained spaces, four corners and four Transit locations.
+- New proposal tests validate counts, retained/removal mapping, side adjacency,
+  premium positions, distinct colors and increasing purchase/development/rent
+  ceilings. All 67 unit/bot/game/UI/proposal tests pass; TypeScript/build pass.
+- Browser studies checked at 1366×768, 1440×900, 1536×864 and 1920×1080: no
+  horizontal overflow, over-two-line titles, title-width overflow, or overlap
+  between printed text and reserved building/pawn zones. Captured all seven
+  approval screenshots at 1440×900. These enlarged studies do not establish
+  final full-board-scale fitting or actual SVG paint collision coverage.
+- Camera correction from the preceding preview remains the baseline. The new
+  art/color/ownership studies affect no real room. Production/gameplay board
+  remains 40 spaces for v2, with legacy v1 preserved. No v3 gameplay/migration
+  has been implemented, so 35→0 and other new board-version tests are pending
+  approval and conversion. The current 40-space regression fixture is retained.
+- Documented movement/corner/Transit/event/victory/version assumptions and a
+  safe v3 path. No hosted changes, deployment, Vercel reconnection or merge.
+
+## Property identity checkpoint revision — October 7, 2026
+
+- Recorded the user's structural approval separately from the unapproved rent,
+  development and L5 experiments. Purchase prices remain balancing candidates.
+  No economy value was changed, applied, simulated or rebalanced in this pass.
+- DEV-only Food Court studies now use one orange district band with distinct
+  café, pizzeria and library/café architecture. Shared primitives retain each
+  property identity across L0–L5; ownership remains a separate small flag.
+- Union studies distinguish the Student Union colonnade from Alumni Hall's
+  clock. START uses an open entrance arch. The camera and real v2 art/data are
+  unchanged; only checkpoint examples were revised.
+- All 68 Node tests pass, including a rendering regression for distinct Food
+  Court identities at each development level. TypeScript/production build pass.
+- Checkpoint layouts at all four desktop targets have no horizontal overflow,
+  over-two-line/width-overflow titles, or print collisions with reserved model
+  and pawn zones. Saved revised A–G screenshots at 1440×900. These are enlarged
+  studies; final 36-space board fitting and SVG paint audits remain pending.
+- Documented later seeded simulation metrics: completion frequency/turn,
+  realized ROI, rent, bankruptcy contribution, conditional ownership win rates,
+  and premium snowballing. No balance claims are inferred from visual tests.
+- No full v3 conversion or 36 final assets. No v2/backend changes, migration,
+  merge, hosted push/deploy or Vercel reconnection.

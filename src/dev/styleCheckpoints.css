@@ -1,0 +1,243 @@
+.style-checkpoints {
+  padding: 28px 36px 70px;
+  color: #193d30;
+  background: #edf0e3;
+  min-height: 100vh;
+}
+.style-checkpoints header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 13px;
+}
+.style-checkpoints header a {
+  color: #214c39;
+  font-weight: 750;
+}
+.style-checkpoints header span {
+  margin-right: auto;
+  color: #63745c;
+}
+.style-checkpoints h1 {
+  font-size: 34px;
+  letter-spacing: -0.04em;
+  margin: 32px 0 10px;
+}
+.study-intro {
+  max-width: 900px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.style-checkpoints nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 22px 0 36px;
+}
+.style-checkpoints nav a {
+  padding: 8px 14px;
+  border: 1px solid #becab4;
+  border-radius: 22px;
+  text-transform: capitalize;
+  color: #254d38;
+  font-size: 12px;
+  text-decoration: none;
+  background: #fff9e8;
+}
+.style-checkpoint {
+  scroll-margin-top: 20px;
+  margin: 28px 0 40px;
+  border-top: 1px solid #c3cfb8;
+  padding-top: 20px;
+}
+.style-checkpoint h2 {
+  font-size: 23px;
+  letter-spacing: -0.025em;
+  margin: 0 0 8px;
+}
+.style-checkpoint > p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #57715e;
+  margin-bottom: 18px;
+  max-width: 950px;
+}
+.study-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+}
+.study-card {
+  width: 278px;
+  border: 1px solid #cad2bd;
+  border-radius: 16px;
+  background: #f7f7eb;
+  padding: 10px 6px 12px;
+}
+.study-tile {
+  position: relative;
+  width: 264px;
+  height: 208px;
+}
+.study-surface {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.study-building-zone {
+  position: absolute;
+  left: 50%;
+  bottom: 110px;
+  width: 94px;
+  height: 103px;
+  transform: translateX(-50%);
+}
+.study-building-zone > svg {
+  width: 100%;
+  height: 100%;
+}
+.study-miniature {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  filter: saturate(1.14) contrast(1.05);
+}
+.study-miniature > svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.study-identity {
+  position: absolute;
+  inset: 0;
+}
+.study-print {
+  position: absolute;
+  top: 116px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 155px;
+  text-align: center;
+}
+.study-print strong {
+  display: block;
+  color: #163e2d;
+  font-size: 14px;
+  font-weight: 780;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  white-space: pre-line;
+}
+.study-print small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #5d7056;
+  line-height: 1.15;
+}
+.study-owner-flag {
+  position: absolute;
+  left: 71%;
+  top: 90px;
+  width: 20px;
+  height: 27px;
+}
+.study-owner-flag svg {
+  width: 100%;
+  height: 100%;
+}
+.study-card footer {
+  color: #64755d;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+}
+.premium-model {
+  width: 108%;
+  height: 110%;
+  transform: translate(-4%, -9%);
+}
+.airport-study {
+  position: relative;
+}
+.study-plane {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  top: 63px;
+  left: 53px;
+}
+.crowd-study {
+  width: 430px;
+}
+.crowd-study .study-tile {
+  width: 416px;
+  height: 280px;
+}
+.crowd-study .study-building-zone {
+  left: 36%;
+  bottom: 130px;
+  width: 110px;
+  height: 121px;
+}
+.crowd-study .study-print {
+  top: 154px;
+  left: 34%;
+  width: 144px;
+}
+.crowd-study .study-owner-flag {
+  left: 24%;
+  top: 138px;
+}
+.study-pawn-zone {
+  position: absolute;
+  display: flex;
+  gap: 2px;
+  top: 111px;
+  left: 51%;
+  transform: rotate(-3deg);
+}
+.study-pawn-zone .tabletop-token {
+  width: 38px !important;
+  height: 50px !important;
+}
+.study-pawn-zone .tabletop-token:nth-child(2) {
+  margin-top: 10px;
+}
+.study-pawn-zone .tabletop-token:nth-child(3) {
+  margin-top: 20px;
+}
+.study-pawn-zone .tabletop-token:nth-child(4) {
+  margin-top: 30px;
+}
+@media (max-width: 700px) {
+  .style-checkpoints {
+    padding: 20px;
+  }
+}
+
+.study-card footer {
+  padding: 8px 0 0;
+  margin: 0;
+  border: 0;
+}
+.study-pawn-zone {
+  left: 53%;
+  top: 99px;
+  gap: 0;
+  transform: none;
+}
+.study-pawn-zone .tabletop-token {
+  width: 34px !important;
+  height: 45px !important;
+}
+.study-pawn-zone .tabletop-token:nth-child(2) {
+  margin-top: 6px;
+}
+.study-pawn-zone .tabletop-token:nth-child(3) {
+  margin-top: 12px;
+}
+.study-pawn-zone .tabletop-token:nth-child(4) {
+  margin-top: 18px;
+}

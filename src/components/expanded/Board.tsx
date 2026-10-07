@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { campusBoard } from "../../lib/expanded";
 import { DiamondSurface } from "../tabletop/DiamondSurface";
 import { DiamondScenery } from "../tabletop/DiamondScenery";
+import {useTabletopPlacement} from "../tabletop/useTabletopPlacement";
 import { Dice } from "./Dice";
 import { BoardTile } from "../tabletop/BoardTile";
 import type { Snapshot } from "../../types/game";
@@ -18,7 +19,9 @@ export function CampusBoard({
   onDestination: (index: number) => void;
   canTravel: boolean;
 }) {
+  const scene=useRef<HTMLDivElement>(null);
   const [positions, setPositions] = useState<Record<string, number>>({});
+  useTabletopPlacement(scene, `${snapshot.revision}:${JSON.stringify(positions)}`);
   const previous = useRef<Snapshot | null>(null);
   useEffect(() => {
     const old = previous.current;
@@ -60,6 +63,7 @@ export function CampusBoard({
   }, [snapshot.revision]);
   return (
     <div
+      ref={scene}
       className={`tabletop-scene diamond-scene ${canTravel ? "choosing-destination" : ""}`}
       aria-label="CampusStack isometric tabletop board"
     >
@@ -81,8 +85,8 @@ export function CampusBoard({
           />
         ))}
       </div>
-      <div className="diamond-dice"><Dice values={snapshot.dice} busy={false} rollKey={snapshot.events.filter(e => e.message.includes(" rolled ")).at(-1)?.sequence} /></div>
-      {children && <section className="campus-center tabletop-stage">{children}</section>}
+      {!children && <div className="diamond-dice"><Dice values={snapshot.dice} busy={false} rollKey={snapshot.events.filter(e => e.message.includes(" rolled ")).at(-1)?.sequence} /></div>}
+      {children}
     </div>
   );
 }

@@ -1,13 +1,64 @@
-// Original campus corner toys, sharing the same roof projection as the slab.
-export function CornerMonument({ index }: { index: number }) {
-  const airport = index === 10, security = index === 20, visiting = index === 30;
-  const color = airport ? '#719ca2' : security ? '#c78f76' : visiting ? '#bda468' : '#498268';
-  return <svg className={`corner-monument monument-${index}`} viewBox="0 0 80 88" aria-hidden="true">
-    <ellipse cx="40" cy="78" rx="35" ry="9" fill="#3c5c40" opacity=".16"/>
-    <path d="m5 64 34-17 36 18-35 18Z" fill="#e6dfc4"/><path d="m5 64 35 19v5L5 69Z" fill="#a9b79b"/><path d="m40 83 35-18v5L40 88Z" fill="#7d997f"/>
-    <path d="m14 30 25 12v32L14 62Z" fill="#fff2d5"/><path d="m39 42 25-12v32L39 74Z" fill="#d2dec9"/>
-    <path d="m9 30 29-15 31 15-30 15Z" fill={color}/><path d="m9 30 30 15v5L9 35Z" fill={color} style={{filter:'brightness(.8)'}}/><path d="m39 45 30-15v5L39 50Z" fill={color} style={{filter:'brightness(.65)'}}/>
-    <path d="m20 45 9 4v13l-9-4Zm28 6 10-5v14l-10 5Z" fill="#88b5b8" stroke="#fff5dd" strokeWidth="2"/>
-    {airport ? <><path d="M38 0v20" stroke="#6d8979" strokeWidth="2"/><path d="m39 2 18 5-18 6Z" fill="#e8b75c"/><path d="m32 26 6-3 7 3-7 3Z" fill="#edf9e9"/></> : visiting ? <path d="m22 60 15 7m-12-8v10m6-7v10m6-7v10" stroke="#607d69" strokeWidth="3"/> : security ? <path d="m29 51 6 3v8l-6 3-6-8v-8Z" fill="#6e8e75"/> : <><path d="m26 50 7 3v17l-7-3Z" fill="#456e57"/><path d="m13 30 25-13 26 13" fill="none" stroke="#dcebc9" strokeWidth="2"/></>}
-  </svg>;
+// Original scenes selected by space kind, independent of board indices/names.
+export function CornerMonument({ kind }: { kind: string }) {
+  const airport = kind === "airport",
+    security = kind === "go_to_jail",
+    visiting = kind === "jail";
+  return (
+    <svg
+      className={`corner-monument monument-${kind}`}
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+    >
+      <ellipse cx="54" cy="90" rx="38" ry="9" fill="#264e38" opacity=".2" />
+      <path d="m6 77 44-22 44 22-44 22Z" fill="#d7d7bc" />
+      <path d="m6 77 44 22v4L6 81Z" fill="#a3b099" />
+      <path d="m50 99 44-22v4l-44 22Z" fill="#768f74" />
+      {airport ? (
+        <>
+          <path d="m13 58 29 14v17L13 75Z" fill="#fff0d0" />
+          <path d="m42 72 24-12v17L42 89Z" fill="#b3ccc5" />
+          <path d="m10 58 25-13 34 15-27 14Z" fill="#388f9b" />
+          <path d="m58 28 12 6v48l-12-6Z" fill="#f1e6c6" />
+          <path d="m70 34 12-6v48l-12 6Z" fill="#8ab5b7" />
+          <path d="m53 25 16-8 18 9-17 9Z" fill="#407586" />
+          <path d="m58 28 12 6 12-6v12l-12 6-12-6Z" fill="#a5d8d9" />
+          <path d="m18 58 14-7 16 8-16 8Z" fill="#dbece5" />
+          <path d="m19 72 18 9" stroke="#73a2ad" strokeWidth="5" />
+        </>
+      ) : visiting ? (
+        <>
+          <path d="m20 40 29 14v32L20 72Z" fill="#f2e4c3" />
+          <path d="m49 54 30-15v32L49 86Z" fill="#b8c8b3" />
+          <path d="m16 39 31-16 35 16-33 17Z" fill="#b58b45" />
+          <path d="m26 52 17 8v15l-17-8Zm28 10 18-9v14l-18 9Z" fill="#54746e" />
+          <path
+            d="m30 54v15m6-12v15m24-14v15m6-18v15"
+            stroke="#e2dfc5"
+            strokeWidth="2"
+          />
+        </>
+      ) : security ? (
+        <>
+          <path d="m18 45 26 13v28L18 73Z" fill="#f3dfc0" />
+          <path d="m44 58 25-13v28L44 86Z" fill="#c5b9a6" />
+          <path d="m14 44 27-14 33 16-30 15Z" fill="#b27153" />
+          <path d="m52 19 12 6v41l-12-6Z" fill="#e6cdad" />
+          <path d="m64 25 12-6v41l-12 6Z" fill="#adada0" />
+          <path d="m48 18 14-7 18 8-16 8Z" fill="#824d3d" />
+          <path d="m23 57 14 7v12l-14-7Z" fill="#79999c" />
+          <path d="m59 31 5 3v12l-5-3Z" fill="#4f7477" />
+        </>
+      ) : (
+        <>
+          <path d="m18 43 31 16v30L18 73Z" fill="#fff0c9" />
+          <path d="m49 59 31-16v30L49 89Z" fill="#bdd0b6" />
+          <path d="m12 42 34-17 40 19-37 18Z" fill="#377952" />
+          <path d="m28 58 12 6v18l-12-6Z" fill="#244e3c" />
+          <path d="m54 66 17-8v12l-17 8Z" fill="#72a4aa" stroke="#e5efdb" />
+          <path d="M48 27V8" stroke="#315d47" strokeWidth="2" />
+          <path d="m49 9 20 5-20 6Z" fill="#efc45e" />
+        </>
+      )}
+    </svg>
+  );
 }

@@ -1,0 +1,108 @@
+// Approved structure; purchase prices are balancing candidates only.
+// Rents/development/L5 values are UNAPPROVED experiments pending simulation.
+// DEV-only: never imported by room, bot, RPC or gameplay code.
+export const proposedDistricts = [
+  {
+    id: "food",
+    name: "Food Court",
+    color: "#D66A2E",
+    count: 3,
+    price: 140,
+    upgrade: 60,
+    baseRent: 20,
+    ceiling: 440,
+    landmark: "Campus Food Hall",
+  },
+  {
+    id: "wellness",
+    name: "Active Campus",
+    color: "#438B61",
+    count: 3,
+    price: 160,
+    upgrade: 75,
+    baseRent: 25,
+    ceiling: 550,
+    landmark: "Athletic Complex",
+  },
+  {
+    id: "arts",
+    name: "Arts Quarter",
+    color: "#AD559D",
+    count: 3,
+    price: 180,
+    upgrade: 90,
+    baseRent: 30,
+    ceiling: 660,
+    landmark: "Performing Arts Center",
+  },
+  {
+    id: "housing",
+    name: "Residence Row",
+    color: "#C19832",
+    count: 3,
+    price: 200,
+    upgrade: 105,
+    baseRent: 35,
+    ceiling: 770,
+    landmark: "Residence Tower",
+  },
+  {
+    id: "science",
+    name: "Discovery District",
+    color: "#348BB8",
+    count: 3,
+    price: 220,
+    upgrade: 120,
+    baseRent: 40,
+    ceiling: 880,
+    landmark: "Research Complex",
+  },
+  {
+    id: "innovation",
+    name: "Innovation District",
+    color: "#7353B8",
+    count: 3,
+    price: 240,
+    upgrade: 140,
+    baseRent: 45,
+    ceiling: 990,
+    landmark: "Innovation Tower",
+  },
+  {
+    id: "social",
+    name: "Union Square",
+    color: "#BB536A",
+    count: 2,
+    price: 320,
+    upgrade: 180,
+    baseRent: 60,
+    ceiling: 1600,
+    landmark: "Grand Union Hall",
+  },
+  {
+    id: "green",
+    name: "Green Quarter",
+    color: "#24877D",
+    count: 2,
+    price: 380,
+    upgrade: 220,
+    baseRent: 75,
+    ceiling: 2000,
+    landmark: "Eco Campus Landmark",
+  },
+];
+// Current IDs identify retained spaces; proposed indices are their array positions.
+export const proposedOrder = [
+  0, 1, 2, 4, 5, 6, 7, 9, 3, 10, 11, 12, 14, 15, 16, 17, 19, 18, 20, 21, 22, 24,
+  25, 26, 27, 29, 8, 30, 31, 34, 23, 35, 36, 39, 28, 33,
+];
+export const proposedRemoved = [13, 32, 37, 38];
+
+export const approvalStatus = {
+  structure: "approved",
+  purchasePrices: "candidate",
+  rents: "experimental",
+  development: "experimental",
+  art: "pending",
+  v3Conversion: "blocked-until-art-approval",
+} as const;

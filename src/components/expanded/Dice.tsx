@@ -19,7 +19,7 @@ export function Dice({
   useEffect(() => {
     if (!values) return;
     setRolling(true);
-    const t = setTimeout(() => setRolling(false), 550);
+    const t = setTimeout(() => setRolling(false), 800);
     return () => clearTimeout(t);
   }, [values?.join(","), rollKey]);
   return (

@@ -63,6 +63,7 @@ export function BoardTile({
     <button
       data-testid={`space-${index}`}
       data-edge={edge}
+      data-occupants={occupants.length}
       data-corner={index % 10 === 0 ? index : undefined}
       data-corner-distance={Math.min(index % 10, 10 - index % 10)}
       className={`campus-space tabletop-tile ${diamond ? "isometric-tile" : ""} kind-${b.kind} district-${b.category} ${index % 10 === 0 ? "corner" : ""} ${owner ? "owned" : ""} ${a?.mortgaged ? "mortgaged" : ""} ${set ? "set-complete" : ""} ${snapshot.pending_property === index ? "offered" : ""} ${occupants.length ? "occupied" : ""}`}
@@ -85,7 +86,7 @@ export function BoardTile({
       title={b.name}
     >
       {diamond && <svg className="diamond-tile-face" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path className="tile-rim" d={tileFace}/><path className="district-edge" d="M5 50 50 5 95 50"/><path className="owner-edge" d="M5 52 50 97 95 52"/></svg>}
-      {diamond && index % 10 === 0 && <CornerMonument index={index}/> }
+      {diamond && index % 10 === 0 && <CornerMonument kind={b.kind}/> }
       {index % 10 === 0 ? (
         <CornerTile
           emblem={emblem}
@@ -98,7 +99,7 @@ export function BoardTile({
           <TileLabel label={tileDisplayNames[index]} subtitle={subtitle} />
         </span>
       )}
-      {owner && (
+      {owner && !diamond && (
         <>
           <span className="tile-owner" aria-hidden="true" />
           <span className="tile-owner-marker" title={`Owned by ${owner.name}`}>
@@ -119,7 +120,7 @@ export function BoardTile({
           className={`tile-buildings ${a.level === 5 ? "landmark" : ""}`}
           aria-label={`${a.level} development levels`}
         >
-          <MiniatureBuilding level={a.level} color={groups.find(g => g.id === b.category)?.color || "#739c7d"} />
+          <MiniatureBuilding level={a.level} color={groups.find(g => g.id === b.category)?.color || "#739c7d"} district={b.category} ownerColor={owner ? colors[owner.seat] : undefined} />
         </span>
       )}
       <span className="campus-tokens">
