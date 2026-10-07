@@ -1,3 +1,4 @@
+import { FoodStudyMiniature } from "./FoodStudyMiniature";
 import { MiniatureBuilding } from "../components/tabletop/MiniatureBuilding";
 import { CornerMonument } from "../components/tabletop/CornerMonument";
 import { PlayerToken } from "../components/tabletop/PlayerToken";
@@ -30,7 +31,9 @@ function StudyMiniature({
   const g = districts.find((g) => g.id === district)!;
   return (
     <div className={`study-miniature ${g.count === 2 ? "premium-model" : ""}`}>
-      {g.count === 2 && level >= 4 ? (
+      {district === "food" ? (
+        <FoodStudyMiniature name={name} level={level} color={g.color} />
+      ) : g.count === 2 && level >= 4 ? (
         <svg viewBox="0 0 100 110" aria-hidden="true">
           <ellipse cx="53" cy="98" rx="36" ry="9" fill="#244a3430" />
           <path d="m10 86 40 20 40-20v5l-40 20-40-20Z" fill="#789080" />
@@ -49,6 +52,32 @@ function StudyMiniature({
             </g>
           ))}
           <path d="m38 73 9 4v18l-9-4Z" fill="#365d48" />
+          {name === "Alumni Hall" ? (
+            <g>
+              <path d="m32 27 11 5v16l-11-5Z" fill="#f7ebc7" />
+              <ellipse
+                cx="37.5"
+                cy="37"
+                rx="4"
+                ry="5.5"
+                fill="#fff7df"
+                stroke="#715b40"
+              />
+              <path d="M37.5 33v4l2 2" stroke="#715b40" fill="none" />
+            </g>
+          ) : (
+            <g>
+              <path d="m28 72 24 12v-7L28 65Z" fill="#e8cf9c" />
+              {[0, 1, 2].map((i) => (
+                <path
+                  key={i}
+                  d={`m${31 + i * 7} ${72 + i * 3.5}v14`}
+                  stroke="#fff0cf"
+                  strokeWidth="3"
+                />
+              ))}
+            </g>
+          )}
           <path d="m9 76 17-8 15 8-17 8Z" fill={g.color} />
           <path d="m9 76 15 8v13L9 89Z" fill="#eee0ba" />
           <path d="m24 84 17-8v13l-17 8Z" fill="#99b6a6" />
@@ -87,20 +116,6 @@ function StudyMiniature({
             strokeWidth="2"
           />
           <path d="M49 37v12" stroke="#275c71" strokeWidth="2" />
-        </svg>
-      )}
-      {level > 0 && district === "food" && (
-        <svg
-          className="study-identity"
-          viewBox="0 0 100 110"
-          aria-hidden="true"
-        >
-          <path d="m21 63 23 11 4-8-23-11Z" fill={g.color} stroke="#704527" />
-          <path
-            d="m25 58 3 10m5-6 3 10m5-6 3 10"
-            stroke="#fff1d0"
-            strokeWidth="3"
-          />
         </svg>
       )}
     </div>
@@ -155,7 +170,32 @@ function StudyTile({
           <path d="M6 80 140 155" stroke="#dee3c8" strokeWidth="2" />
         </svg>
         <div className="study-building-zone">
-          {type === "airport" || type === "start" ? (
+          {type === "start" ? (
+            <svg viewBox="0 0 100 110" aria-hidden="true">
+              <ellipse cx="52" cy="98" rx="40" ry="9" fill="#2a503c30" />
+              <path d="m5 83 45 23 45-23v5l-45 23L5 88Z" fill="#859881" />
+              <path d="m14 37 14 7v49l-14-7Z" fill="#f6e4ba" />
+              <path d="m28 44 12-6v49l-12 6Z" fill="#a9bea6" />
+              <path d="m62 37 14 7v49l-14-7Z" fill="#f6e4ba" />
+              <path d="m76 44 12-6v49l-12 6Z" fill="#9ab49e" />
+              <path d="m10 36 14-8 19 9-15 9Z" fill="#3c7955" />
+              <path d="m58 36 14-8 19 9-15 9Z" fill="#3c7955" />
+              <path
+                d="m27 40 37 18 9-5v-9L36 26l-9 5Z"
+                fill="#e8d3a4"
+                stroke="#ab9e7a"
+              />
+              <path d="m27 31 37 18 9-5-37-18Z" fill="#588960" />
+              <path d="M24 29V8" stroke="#476b4e" strokeWidth="2" />
+              <path d="m25 9 17 5-17 6Z" fill="#dbad4d" />
+              <path
+                d="m36 83 14 7 16-8"
+                stroke="#c7b988"
+                strokeWidth="6"
+                fill="none"
+              />
+            </svg>
+          ) : type === "airport" ? (
             <CornerMonument kind={type} />
           ) : type === "station" ? (
             <svg viewBox="0 0 100 110" aria-hidden="true">
@@ -263,7 +303,7 @@ export default function StyleCheckpoints() {
     <main className="style-checkpoints">
       <header>
         <a href="/">CampusStack</a>
-        <span>36-space direction · Approval studies only</span>
+        <span>Structure approved · Art pending · Economy experimental</span>
         <a href="/__dev/tabletop">Current camera</a>
       </header>
       <h1>One district. One color. Real pieces.</h1>
@@ -290,7 +330,7 @@ export default function StyleCheckpoints() {
       <Checkpoint
         id="district"
         title="A · Complete Food Court"
-        note="One orange band and matching architecture. All three properties form one adjacent district; owning all three unlocks development."
+        note="One orange district band; three property identities: café, pizzeria, and library/café. Ownership and development remain separate."
       >
         {["Eng. Café", "Green Street", "Library Café"].map((name) => (
           <StudyTile key={name} name={name} level={1} />
@@ -320,13 +360,13 @@ export default function StyleCheckpoints() {
       <Checkpoint
         id="development"
         title="D · A property transforms"
-        note="L0 stays empty; L1 one structure; L2 two; L3 campus block; L4 a mid-rise; L5 an Innovation Tower. Original shared roof/front/side model with upper-left light."
+        note="Engineering Café keeps its café identity: L0 empty, L1 one structure, L2 two, L3 a complex, L4 mid-rise, L5 Food Hall. Development changes the silhouette, not the set or owner identity."
       >
         {[0, 1, 2, 3, 4, 5].map((level) => (
           <StudyTile
             key={level}
-            name="Innovation"
-            district="innovation"
+            name="Eng. Café"
+            district="food"
             level={level}
           />
         ))}
@@ -334,7 +374,7 @@ export default function StyleCheckpoints() {
       <Checkpoint
         id="premium"
         title="E · Premium Union Square"
-        note="Two adjacent properties on the final side. Taller Landmark forms; one rose district color. Proposed $320 purchase / $180 development / $1,600 maximum rent."
+        note="Two adjacent properties on the final side. Taller Landmark forms; one rose district color. Purchase candidate: $320. Rent and development costs are unapproved; Union $1,600 and Green $2,000 L5 are experimental, pending simulation."
       >
         <StudyTile name="Student Union" district="social" level={5} />
         <StudyTile name="Alumni Hall" district="social" level={5} />

@@ -221,3 +221,26 @@ The final audit includes text/price/icon-to-text collisions as well as markers.
   approval and conversion. The current 40-space regression fixture is retained.
 - Documented movement/corner/Transit/event/victory/version assumptions and a
   safe v3 path. No hosted changes, deployment, Vercel reconnection or merge.
+
+## Property identity checkpoint revision — October 7, 2026
+
+- Recorded the user's structural approval separately from the unapproved rent,
+  development and L5 experiments. Purchase prices remain balancing candidates.
+  No economy value was changed, applied, simulated or rebalanced in this pass.
+- DEV-only Food Court studies now use one orange district band with distinct
+  café, pizzeria and library/café architecture. Shared primitives retain each
+  property identity across L0–L5; ownership remains a separate small flag.
+- Union studies distinguish the Student Union colonnade from Alumni Hall's
+  clock. START uses an open entrance arch. The camera and real v2 art/data are
+  unchanged; only checkpoint examples were revised.
+- All 68 Node tests pass, including a rendering regression for distinct Food
+  Court identities at each development level. TypeScript/production build pass.
+- Checkpoint layouts at all four desktop targets have no horizontal overflow,
+  over-two-line/width-overflow titles, or print collisions with reserved model
+  and pawn zones. Saved revised A–G screenshots at 1440×900. These are enlarged
+  studies; final 36-space board fitting and SVG paint audits remain pending.
+- Documented later seeded simulation metrics: completion frequency/turn,
+  realized ROI, rent, bankruptcy contribution, conditional ownership win rates,
+  and premium snowballing. No balance claims are inferred from visual tests.
+- No full v3 conversion or 36 final assets. No v2/backend changes, migration,
+  merge, hosted push/deploy or Vercel reconnection.

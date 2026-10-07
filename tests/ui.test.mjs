@@ -5,7 +5,7 @@ let ui;
 before(async () => {
   const result = await build({
     stdin: {
-      contents: `export {MiniatureBuilding,architecture} from './src/components/tabletop/MiniatureBuilding';export {createElement} from 'react';export {renderToStaticMarkup} from 'react-dom/server';export {ExpandedGame} from './src/components/expanded/GameScreen';export {PropertyCard} from './src/components/expanded/PropertyCard';export {VictoryScreen} from './src/components/expanded/VictoryScreen';`,
+      contents: `export {FoodStudyMiniature,foodStudyProfiles} from './src/dev/FoodStudyMiniature';export {MiniatureBuilding,architecture} from './src/components/tabletop/MiniatureBuilding';export {createElement} from 'react';export {renderToStaticMarkup} from 'react-dom/server';export {ExpandedGame} from './src/components/expanded/GameScreen';export {PropertyCard} from './src/components/expanded/PropertyCard';export {VictoryScreen} from './src/components/expanded/VictoryScreen';`,
       resolveDir: new URL("../", import.meta.url).pathname,
     },
     bundle: true,
@@ -205,25 +205,66 @@ test("tabletop preserves full accessible tile names, shared occupants, mortgages
   );
 });
 
-
 test("diamond presentation keeps the authoritative tile indices and development levels with one dice stage", () => {
-  const html = render({...base, dice:[4,2], assets:{16:{owner:"p1",level:3,mortgaged:false}}});
-  assert.equal((html.match(/isometric-tile/g)||[]).length,40);
-  assert.equal((html.match(/physical-dice/g)||[]).length,1);
-  assert.match(html,/miniature-level-3/);
-  assert.match(html,/Student Apartments, owned by Quan/);
-  assert.match(html,/tabletop-side-dock/);
-  assert.match(html,/Roll Dice/);
+  const html = render({
+    ...base,
+    dice: [4, 2],
+    assets: { 16: { owner: "p1", level: 3, mortgaged: false } },
+  });
+  assert.equal((html.match(/isometric-tile/g) || []).length, 40);
+  assert.equal((html.match(/physical-dice/g) || []).length, 1);
+  assert.match(html, /miniature-level-3/);
+  assert.match(html, /Student Apartments, owned by Quan/);
+  assert.match(html, /tabletop-side-dock/);
+  assert.match(html, /Roll Dice/);
   assert.ok(!html.includes("tabletop-plane campus-board"));
 });
 
 test("development silhouettes distinguish zero, one, two, three, mid-rise and district Landmarks", () => {
   for (const district of Object.keys(ui.architecture)) {
-    const renderLevel = level => ui.renderToStaticMarkup(ui.createElement(ui.MiniatureBuilding,{level,district,color:"#8973ca"}));
+    const renderLevel = (level) =>
+      ui.renderToStaticMarkup(
+        ui.createElement(ui.MiniatureBuilding, {
+          level,
+          district,
+          color: "#8973ca",
+        }),
+      );
     assert.equal(renderLevel(0), "", "undeveloped property has no structure");
-    for (const level of [1,2,3]) assert.equal((renderLevel(level).match(/class="mini-structure"/g)||[]).length,level);
-    assert.match(renderLevel(4),/data-height="43"/);
-    assert.match(renderLevel(5),new RegExp(ui.architecture[district].landmark));
-    assert.match(renderLevel(5),new RegExp(`architecture-${district}`));
+    for (const level of [1, 2, 3])
+      assert.equal(
+        (renderLevel(level).match(/class="mini-structure"/g) || []).length,
+        level,
+      );
+    assert.match(renderLevel(4), /data-height="43"/);
+    assert.match(
+      renderLevel(5),
+      new RegExp(ui.architecture[district].landmark),
+    );
+    assert.match(renderLevel(5), new RegExp(`architecture-${district}`));
   }
+});
+
+test("Food Court approval art preserves three distinct property identities across development", () => {
+  const renders = [];
+  for (const [name, profile] of Object.entries(ui.foodStudyProfiles)) {
+    const render = (level) =>
+      ui.renderToStaticMarkup(
+        ui.createElement(ui.FoodStudyMiniature, {
+          name,
+          level,
+          color: "#D66A2E",
+        }),
+      );
+    assert.equal(render(0), "");
+    for (let level = 1; level <= 5; level++) {
+      const html = render(level);
+      assert.ok(html.includes(`data-food-property="${profile.form}"`));
+      assert.ok(html.includes("#D66A2E"));
+      assert.ok(!html.includes("NaN"));
+    }
+    renders.push(render(1));
+    assert.notEqual(render(4), render(5));
+  }
+  assert.equal(new Set(renders).size, 3);
 });

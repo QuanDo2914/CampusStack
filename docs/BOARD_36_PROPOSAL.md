@@ -1,6 +1,18 @@
 # CampusStack 36-space approval proposal
 
-This is a proposal, not an authoritative board definition. The existing camera
+## Approval status — October 7, 2026
+
+Structure, removed spaces, Transit/corner placement, contiguous districts,
+permanent district color, separate owner indicator and immutable v3 approach
+are approved. Purchase prices are initial balancing candidates only.
+**Rents, development costs and L5 values are NOT approved.** Union L5 $1,600
+and Green L5 $2,000 are experiments, not committed design targets. No economy
+values are rebalanced or applied during the visual checkpoint stage.
+
+Art approval is pending. Do not produce all 36 final assets or perform the
+complete v3 conversion until the revised checkpoint screenshots are approved.
+
+This document is not an authoritative board definition. The existing camera
 correction is the baseline. No board, room, bot, migration or Edge Function
 change is included in these studies. All current rooms remain unchanged.
 
@@ -150,3 +162,35 @@ remains intact for v2; add a version-selected 36-space fixture for v3.
 
 These approval studies test proposal structure only. They do not claim that
 36-space gameplay or final board-scale collision tests are implemented yet.
+
+
+## Later simulation gate — no simulations/rebalancing in this art stage
+
+Two-property sets are easier to complete. Validate that advantage against
+purchase/development expense, available capital, rent yield and time remaining;
+do not infer balance from nominal L5 rent alone. Preserve the experimental
+numbers as a baseline, then compare candidates only in the later economy stage.
+
+Use reproducible seeded matches, randomized seats and multiple bot policies.
+Report sample sizes, match lengths, policy mix and uncertainty, including games
+where districts never complete. Avoid claiming causation from ownership alone:
+strong players can both acquire premium sets and win for other reasons.
+
+Required per-district report:
+- Completion frequency: matches with a completed district / all matches.
+- Average completion turn: first complete ownership in completed matches;
+  report noncompletion separately rather than treating it as turn zero.
+- Average realized ROI: (rent collected + recovered sale proceeds - purchase
+  and development spending) / spending, per investor and district; include
+  zero-rent investments. Report cash ROI separately from final asset valuation.
+- Rent collected: aggregate and per-match/per-ownership-turn distributions.
+- Bankruptcy contribution: final rent charge causing bankruptcy, plus prior
+  rent drain by district, so last-hit attribution does not hide cumulative harm.
+- Win rate when owning each district: separate any ownership, completed-set
+  ownership and development level; compare seats, acquisition turns and wealth.
+- Premium snowballing: completion speed, capital/rent concentration, time from
+  completion to win, opponent bankruptcies and conditional win advantage.
+
+Use paired seeds across later economic candidates and report whether either
+premium pair dominates across policies, rather than only one bot's strategy.
+No simulation claims or economy approval are implied by current passing tests.

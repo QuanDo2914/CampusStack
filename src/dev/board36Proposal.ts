@@ -1,4 +1,6 @@
-// Proposal only: never imported by room, bot, RPC or gameplay code.
+// Approved structure; purchase prices are balancing candidates only.
+// Rents/development/L5 values are UNAPPROVED experiments pending simulation.
+// DEV-only: never imported by room, bot, RPC or gameplay code.
 export const proposedDistricts = [
   {
     id: "food",
@@ -95,3 +97,12 @@ export const proposedOrder = [
   25, 26, 27, 29, 8, 30, 31, 34, 23, 35, 36, 39, 28, 33,
 ];
 export const proposedRemoved = [13, 32, 37, 38];
+
+export const approvalStatus = {
+  structure: "approved",
+  purchasePrices: "candidate",
+  rents: "experimental",
+  development: "experimental",
+  art: "pending",
+  v3Conversion: "blocked-until-art-approval",
+} as const;
